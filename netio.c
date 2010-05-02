@@ -43,7 +43,7 @@ if ( p_stdout )
     }
     
 if ( p_server )
-    doserver();
+    doserver( p_target );
 else
     doclient();
 
