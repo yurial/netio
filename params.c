@@ -6,28 +6,34 @@
 #include "params.h"
 #include "help.h"
 #include "cp.h"
+#include "collision.h"
+#include "examples.h"
 
-char**  p_targetv = NULL;
-int     p_targetc = 0;
+char**  p_targetv      = NULL;
+int     p_targetc      = 0;
 
-int     p_server = 0;
-int     p_once = 0;         //TODO: once
-char*   p_stdin = NULL;
-char*   p_stdout = NULL;
-char*   p_exec = NULL;      //TODO:
-char*   p_onconnect = NULL; //TODO:
-int     p_wait = 0;         //TODO:
-int     p_sync = 0;
+int     p_server       = 0;
+int     p_once         = 0;
+int     p_connqueue    = 1;
+char*   p_stdin        = NULL;
+char*   p_stdout       = NULL;
+char*   p_exec         = NULL;
+char*   p_predirect    = NULL;
+char*   p_credirect    = NULL;
+int     p_wait         = 0;
+int     p_sync         = 0;
 int     p_nonbuffering = 0;
-int     p_buffsize = 1024;  //TODO:
+int     p_buffsize     = 1024;
 
-const static char options[] = "hl1i:o:e:c:w:snb:";
+const static char options[] = "hl1q:i:o:e:c:p:w:snb:";
 const static struct option long_options[] = {
         { "help",      0, 0, 'h' },
         { "listen",    0, 0, 'l' },
         { "once",      0, 0, '1' },
+	{ "connqueue", 1, 0, 'q' },
         { "exec",      1, 0, 'e' },
-        { "onconnect", 1, 0, 'c' },
+        { "predirect", 1, 0, 'p' },
+        { "credirect", 1, 0, 'c' },
         { "wait",      1, 0, 'w' },
         { "sync",      0, 0, 's' },
         { "buff",      1, 0, 'b' },
@@ -67,6 +73,11 @@ while( 1 )
             p_once = 1;
             }
             break;
+	case 'q':
+	    {
+	    p_connqueue = atoi( optarg );
+	    }
+	    break;
         case 'i':
             {
             p_stdin = cp( optarg );
@@ -82,14 +93,18 @@ while( 1 )
             p_exec = cp( optarg );
             }
             break;
-        case 'c':
+        case 'p':
             {
-            p_onconnect = cp( optarg );
+            p_predirect = cp( optarg );
             }
             break;
+	case 'c':
+	    {
+	    p_credirect = cp( optarg );
+	    }
+	    break;
         case 'w':
             {
-fprintf( stderr, "test for numeric\n" );
             p_wait = atoi( optarg );
             }
             break;
@@ -105,9 +120,13 @@ fprintf( stderr, "test for numeric\n" );
             break;
         case 'b':
             {
-fprintf( stderr, "test for numeric\n" );
-            p_buffsize = atoi( optarg );
-            }
+	    char* pend;
+            p_buffsize = strtol( optarg, &pend, 10 );
+            if ( *pend == 'k' || *pend == 'K' )
+	        p_buffsize *= 1024;
+	    else if ( *pend == 'm' || *pend == 'M' )
+	        p_buffsize *= 1024 * 1024;
+	    }
             break;
         default:
             {
@@ -133,16 +152,21 @@ else
     exit( EXIT_FAILURE );
     }
 
+/* collision check */
+collision_check();
+
 #ifdef DEBUG
 int i;
 for (i = 0; i < p_targetc; ++i)
     fprintf( stderr, "target: %s\n", p_targetv[i] );
 fprintf( stderr, "server: %d\n", p_server );
 fprintf( stderr, "once: %d\n", p_once );
+fprintf( stderr, "connqueue: %d\n", p_connqueue );
 fprintf( stderr, "stdin: %s\n", p_stdin );
 fprintf( stderr, "stdout %s\n", p_stdout );
 fprintf( stderr, "exec: %s\n", p_exec );
-fprintf( stderr, "onconnect: %s\n", p_onconnect );
+fprintf( stderr, "predirect: %s\n", p_predirect );
+fprintf( stderr, "credirect: %s\n", p_credirect );
 fprintf( stderr, "wait: %d\n", p_wait );
 fprintf( stderr, "sync: %d\n", p_sync );
 fprintf( stderr, "nonbuffering: %d\n", p_nonbuffering );

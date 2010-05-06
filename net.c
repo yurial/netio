@@ -59,14 +59,9 @@ free( hostname );
 ++hostend;
 struct servent* serv = getservbyname( hostend, net_params[index].m_protoname );
 if ( serv )
-    {
     *port = serv->s_port;
-    }
 else
-    {
     *port = htons( atoi( hostend ) );
-    //TODO:
-    }
 return proto;
 }
 

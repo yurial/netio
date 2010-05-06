@@ -1,5 +1,5 @@
-netio: netio.o help.o params.o mkserver.o mkclient.o net.o cp.o mainloop.o terminal.o set.o
-	gcc netio.o help.o params.o mkserver.o mkclient.o net.o cp.o mainloop.o terminal.o set.o -o netio
+netio: netio.o help.o params.o mkserver.o mkclient.o net.o cp.o mainloop.o terminal.o set.o run.o collision.o examples.o makefile
+	gcc netio.o help.o params.o mkserver.o mkclient.o net.o cp.o mainloop.o terminal.o set.o run.o collision.o examples.o -o netio
 
 clean:
 	rm *.o netio
@@ -11,7 +11,7 @@ help.o: help.c help.h
 	gcc -c help.c -o help.o
 
 params.o: params.c params.h
-	gcc -DDEBUG -c params.c -o params.o
+	gcc -c params.c -o params.o
 
 mkserver.o: mkserver.c mkserver.h
 	gcc -c mkserver.c -o mkserver.o
@@ -33,4 +33,13 @@ terminal.o: terminal.c terminal.h
 
 set.o: set.c set.h
 	gcc -c set.c -o set.o
+
+run.o: run.c run.h
+	gcc -c run.c -o run.o
+
+collision.o: collision.c collision.h
+	gcc -c collision.c -o collision.o
+
+examples.o:  examples.c examples.h
+	gcc -c examples.c -o examples.o
 
