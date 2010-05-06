@@ -7,21 +7,19 @@
 #include "help.h"
 #include "cp.h"
 
-#ifndef NULL
-#define NULL 0
-#endif
+char**  p_targetv = NULL;
+int     p_targetc = 0;
 
-char* p_target = NULL;
-int   p_server = 0;
-int   p_once = 0;
-char* p_stdin = NULL;
-char* p_stdout = NULL;
-char* p_exec = NULL;
-char* p_onconnect = NULL;
-int   p_wait = 0;
-int   p_sync = 0;
-int   p_newline = 0;
-int   p_buffsize = 1024;
+int     p_server = 0;
+int     p_once = 0;         //TODO: once
+char*   p_stdin = NULL;
+char*   p_stdout = NULL;
+char*   p_exec = NULL;      //TODO:
+char*   p_onconnect = NULL; //TODO:
+int     p_wait = 0;         //TODO:
+int     p_sync = 0;
+int     p_nonbuffering = 0;
+int     p_buffsize = 1024;  //TODO:
 
 const static char options[] = "hl1i:o:e:c:w:snb:";
 const static struct option long_options[] = {
@@ -102,7 +100,7 @@ fprintf( stderr, "test for numeric\n" );
             break;
         case 'n':
             {
-            p_newline = 1;
+            p_nonbuffering = 1;
             }
             break;
         case 'b':
@@ -120,7 +118,14 @@ fprintf( stderr, "test for numeric\n" );
         }
     }
 if ( optind < argc )
-    p_target = cp( argv[optind] );
+    {
+    p_targetc = argc - optind;
+    p_targetv = malloc( sizeof(char*) * p_targetc );
+    int ind;
+    int argind;
+    for (ind = 0, argind = optind; argind < argc; ++ind, ++argind)
+        p_targetv[ind] = cp( argv[argind] );
+    }
 else
     {
     fprintf( stderr, "<target> not specified!\n" );
@@ -129,7 +134,9 @@ else
     }
 
 #ifdef DEBUG
-fprintf( stderr, "target: %s\n", p_target );
+int i;
+for (i = 0; i < p_targetc; ++i)
+    fprintf( stderr, "target: %s\n", p_targetv[i] );
 fprintf( stderr, "server: %d\n", p_server );
 fprintf( stderr, "once: %d\n", p_once );
 fprintf( stderr, "stdin: %s\n", p_stdin );
@@ -138,7 +145,7 @@ fprintf( stderr, "exec: %s\n", p_exec );
 fprintf( stderr, "onconnect: %s\n", p_onconnect );
 fprintf( stderr, "wait: %d\n", p_wait );
 fprintf( stderr, "sync: %d\n", p_sync );
-fprintf( stderr, "newline: %d\n", p_newline );
+fprintf( stderr, "nonbuffering: %d\n", p_nonbuffering );
 fprintf( stderr, "buffsize: %d\n", p_buffsize );
 #endif
 }

@@ -3,14 +3,14 @@
 
 char* cp(char* source)
 {
-int length;
+size_t lenght;
 char* result;
 
 if ( !source )
     return;
 
-length = strlen( source );
-result = malloc( length );
+lenght = strlen( source );
+result = (char*)malloc( lenght );
 if ( result == NULL )
     return;
 

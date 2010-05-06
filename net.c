@@ -4,69 +4,69 @@
 #include "net.h"
 #include "cp.h"
 
-enum PROTO getproto(char* target)
+enum PROTO parsetarget(char* target, struct hostent** host, int* port)
 {
-if ( !memcmp( STR_UNIX, target, sizeof(STR_UNIX)-1 ) )
-    return PROTO_UNIX;
-if ( !memcmp( STR_TCP, target, sizeof(STR_TCP)-1 ) )
-    return PROTO_TCP;
-if ( !memcmp( STR_UDP, target, sizeof(STR_UDP)-1 ) )
-    return PROTO_UDP;
-if ( !memcmp( STR_SCTP, target, sizeof(STR_SCTP)-1 ) )
-    return PROTO_SCTP;
-return PROTO_UNKNOWN;
-}
-
-size_t getprotolenght(enum PROTO proto)
-{
-switch( proto )
+enum PROTO proto = -1;
+int index = 0;
+while ( net_params[index].m_str )
     {
-    case PROTO_UNKNOWN:
-        return 0;
-        break;
-    case PROTO_TCP:
-        return sizeof(STR_TCP)-1;
-        break;
-    case PROTO_UDP:
-        return sizeof(STR_UDP)-1;
-        break;
-    case PROTO_SCTP:
-        return sizeof(STR_SCTP)-1;
-        break;
-    case PROTO_UNIX:
-        return sizeof(STR_UNIX)-1;
-        break;
-    default:
-        assert( 0 );
-        break;
+    if ( !memcmp( target, net_params[index].m_str, net_params[index].m_strlength ) )
+         {
+	 proto = net_params[index].m_proto;
+	 target += net_params[index].m_strlength;
+	 break;
+	 }
+    ++index;
     }
-return -1;
-}
-
-char* gethost(enum PROTO proto, char* target)
-{
-target += getprotolenght( proto );
+if ( proto == -1 )
+    {
+    fprintf( stderr, "protocol not specified\n" );
+    exit( EXIT_FAILURE );
+    }
 
 char endchar = ( *target == '[' )? ']' : ':';
 
 char* hostend;
 for (hostend = target; *hostend && *hostend != endchar; ++hostend)
     ;
+
 if ( !*hostend )
-    return cp( target );
+    if ( proto == PROTO_UNIX )
+        {
+	*host = malloc( sizeof(struct hostent) );
+	memset( *host, 0, sizeof(struct hostent) );
+        (*host)->h_length = strlen( target );
+	(*host)->h_addr_list = malloc( sizeof(char*) );
+	*((*host)->h_addr_list) = cp( target );
+        return proto;
+	}
+    else
+        {
+        fprintf( stderr, "port not specified\n" );
+        exit( EXIT_FAILURE );
+        }
 
 if ( *hostend == ']' )
     ++hostend;
 
 int lenght = hostend - target;
-char* host = malloc( lenght + 1 );
-memcpy( host, target, lenght );
-host[lenght] = 0;
-return host;
+char* hostname= malloc( lenght + 1 );
+memcpy( hostname, target, lenght );
+hostname[lenght] = 0;
+*host = gethostbyname2( hostname, net_params[index].m_domain );
+free( hostname );
+
+++hostend;
+struct servent* serv = getservbyname( hostend, net_params[index].m_protoname );
+if ( serv )
+    {
+    *port = serv->s_port;
+    }
+else
+    {
+    *port = htons( atoi( hostend ) );
+    //TODO:
+    }
+return proto;
 }
 
-int getport(enum PROTO proto, char* host, char* target)
-{
-target += getprotolenght( proto ) + strlen( host ) + 1;
-return atoi( target );
-}
