@@ -6,7 +6,7 @@ void help()
 fprintf( stderr, "%s\n\n", "NAME" );
 fprintf( stderr, "%s\n", "netio - bind stdin & stdout with socket" );
 fprintf( stderr, "\n%s\n\n", "SYNOPSIS" );
-fprintf( stderr, "%s\n", "netio [-l <target> [-1]] [-q <count>] [-i <file>] [-o <file>] [-e <command>] [-p <command>] [-c <command>] [-w <sec>] [-a] [-s] [-n] [-b <size[K|M]>] <target>" );
+fprintf( stderr, "%s\n", "netio [-l <target> [-1]] [-q <count>] [-i <file>] [-o <file>] [-e <command>] [-p <command>] [-c <command>] [-w <sec>] [-s] [-n] [-b <size[K|M]>] <target>" );
 fprintf( stderr, "%s\n", "<target>          <local>|<net>" );
 fprintf( stderr, "%s\n", "<net>             [<proto>://]<host>:<port>, if <proto> not specified use tcp" );
 fprintf( stderr, "%s\n", "<proto>           tcp|udp|sctp" );
