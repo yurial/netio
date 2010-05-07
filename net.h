@@ -10,6 +10,8 @@
 #include <sys/socket.h>
 #include <netdb.h>
 
+#include "proto.h"
+
 static const char STR_TCP[]   = "tcp";
 static const char STR_UDP[]   = "udp";
 static const char STR_SCTP[]  = "stcp";
@@ -21,6 +23,7 @@ static const char STR_TCP6[]  = "tcp6://";
 static const char STR_UDP6[]  = "udp6://";
 static const char STR_SCTP6[] = "sctp6://";
 //static const char STR_UNIX[] = "";
+
 
 enum PROTO
 {
