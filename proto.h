@@ -15,7 +15,7 @@
 #endif
 
 #ifndef IPPROTO_IPV6
-#define IPPROTO_IPv6 41
+#define IPPROTO_IPV6 41
 #endif
 
 #ifndef IPPROTO_ICMPV6
