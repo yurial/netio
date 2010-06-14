@@ -1,0 +1,87 @@
+netio(1)
+
+
+
+NAME
+	netio - bind stdin & stdout with socket
+
+SYNOPSIS
+	netio [-l [-1]] [-q <count>] [-w <sec>] [-s] [-n] [-b <size[K|M|G]>] <target>
+TODO:	[{[-i][-o]|--io} {once|every}:<command>]
+	<target>:       <local>|<net>
+	<net>:          [<proto>://]<host>:<port>, 
+			if <proto> not specified use tcp
+	<proto>:        tcp|udp|sctp
+	<host>:         <ipv4>|<ipv6>|<host name>
+	<port>:         single numeric 1-65535
+	<local>:        unix:<socket>
+	<socket>:       path to unix socket
+
+DESCRIPTION
+	TODO:
+
+OPTIONS
+	-h --help         
+		show small help and exit
+
+	-l --listen
+		listen (server mode)
+
+	-1 --once
+		exit program after connection close
+		usign with listen (server mode) only
+
+	-q --connqueue
+		maximum queue length of pending connections, default 1
+
+	-c --cmd <command>
+		use command line VMESTO '/bin/sh -c' for redirection
+
+	-i --in  {once|every}:<command>
+		once:  for all connections will be one input descriptor assigned with <command>
+		every: for all connections will be self input descriptor assigned with <command>
+
+	-o --out {once|every}:<command>
+		TODO:
+
+	--io     {once|every}:<command>
+		TODO:
+
+	-w --wait <seconds>        
+		wait <seconds> seconds after EOF before closing a socket
+
+	-s --sync         
+		use sync() after write to stdout
+
+	-n	enable stdin non-buffering mode
+
+	-b --buff <size>[K|M|G]
+		buffer for stdin, default 1K
+		K - Kilobytes
+		M - Megabytes
+		G - Gigabytes
+
+EXAMPLE
+	TODO: fix all examples
+	$ netio microsoft.com:23
+
+	$ netio -l sctp://localhost:1000
+
+	$ netio -l unix:/tmp/mysocket
+
+	$ netio unix:../mysocket
+
+	$ echo "MBX7Z86PRQYUHH13NKMTNQJGZY6ECTE=" | netio -w 3 10.40.100.10:31337 >>answer
+
+	$ netio -snl -c"netio -sn unix:/var/run/mysqld/mysqld.sock" 0.0.0.0:3306
+
+	host1 $ netio -l1 -o dump.raw 0.0.0.0:1010
+	host2 # tcpdump -i wlan0 -w - |netio host1:1010
+
+	host1 # netio -sl -c/bin/bash 0.0.0.0:23
+	host2 $ netio -s host1:23
+
+AUTHORS
+	This manual page was written by Yuri Dyachenko, Andrey Zaikin, Den Menshikov.
+	Tool written by Yuri Dyachenko.
+
