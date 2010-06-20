@@ -30,8 +30,10 @@ char* hostend;
 for (hostend = target; *hostend && *hostend != endchar; ++hostend)
     ;
 
+
 if ( !*hostend )
-    if ( proto == PROTO_UNIX )
+#ifdef USEUNIX
+	if ( proto == PROTO_UNIX )
         {
 	*host = malloc( sizeof(struct hostent) );
 	memset( *host, 0, sizeof(struct hostent) );
@@ -41,6 +43,7 @@ if ( !*hostend )
         return proto;
 	}
     else
+#endif
         {
         fprintf( stderr, "port not specified\n" );
         exit( EXIT_FAILURE );
