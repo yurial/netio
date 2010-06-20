@@ -15,26 +15,26 @@ int     p_targetc      = 0;
 int     p_server       = 0;
 int     p_once         = 0;
 int     p_connqueue    = 1;
-char*   p_stdin        = NULL;
-char*   p_stdout       = NULL;
-char*   p_exec         = NULL;
-char*   p_predirect    = NULL;
-char*   p_credirect    = NULL;
+char*   p_cmd          = NULL;
+char*   p_inout        = NULL;
+char*   p_outopt       = NULL;
+char*   p_ioopt        = NULL;
 int     p_wait         = 0;
 int     p_sync         = 0;
 int     p_nonbuffering = 0;
 int     p_buffsize     = 1024;
 
-const static char options[] = "hl1q:i:o:e:c:p:w:snb:";
+const static char options[] = "hl1q:c:i:o:w:snb:";
 const static struct option long_options[] = {
+	{ "io",        1, 0,  0  },
         { "help",      0, 0, 'h' },
         { "listen",    0, 0, 'l' },
         { "once",      0, 0, '1' },
 	{ "connqueue", 1, 0, 'q' },
-        { "exec",      1, 0, 'e' },
-        { "predirect", 1, 0, 'p' },
-        { "credirect", 1, 0, 'c' },
-        { "wait",      1, 0, 'w' },
+	{ "cmd",       1, 0, 'c' },
+        { "in",        1, 0, 'i' },
+	{ "out",       1, 0, 'o' },
+	{ "wait",      1, 0, 'w' },
         { "sync",      0, 0, 's' },
         { "buff",      1, 0, 'b' },
         { 0,           0, 0,  0  }
@@ -55,7 +55,11 @@ while( 1 )
 	case 0:
             {
             fprintf( stderr, "long option!\n" );
-            }
+	    if (option_index == 0 )
+	        {
+		p_ioopt = cp( optarg );
+		}
+	    }
             break;
         case 'h':
             {
@@ -78,31 +82,21 @@ while( 1 )
 	    p_connqueue = atoi( optarg );
 	    }
 	    break;
+	case 'c':
+	    {
+            p_cmd = cp( optarg );
+	    }
+	    break;
         case 'i':
             {
-            p_stdin = cp( optarg );
+            p_inopt = cp( optarg );
             }
             break;
         case 'o':
             {
-            p_stdout = cp( optarg );
+            p_outopt = cp( optarg );
             }
             break;
-        case 'e':
-            {
-            p_exec = cp( optarg );
-            }
-            break;
-        case 'p':
-            {
-            p_predirect = cp( optarg );
-            }
-            break;
-	case 'c':
-	    {
-	    p_credirect = cp( optarg );
-	    }
-	    break;
         case 'w':
             {
             p_wait = atoi( optarg );
@@ -162,11 +156,10 @@ for (i = 0; i < p_targetc; ++i)
 fprintf( stderr, "server: %d\n", p_server );
 fprintf( stderr, "once: %d\n", p_once );
 fprintf( stderr, "connqueue: %d\n", p_connqueue );
-fprintf( stderr, "stdin: %s\n", p_stdin );
-fprintf( stderr, "stdout %s\n", p_stdout );
-fprintf( stderr, "exec: %s\n", p_exec );
-fprintf( stderr, "predirect: %s\n", p_predirect );
-fprintf( stderr, "credirect: %s\n", p_credirect );
+fprintf( stderr, "cmd: %s\n", p_cmd );
+fprintf( stderr, "in: %s\n", p_inopt );
+fprintf( stderr, "out %s\n", p_outopt );
+fprintf( stderr, "inout: %s\n", p_ioopt );
 fprintf( stderr, "wait: %d\n", p_wait );
 fprintf( stderr, "sync: %d\n", p_sync );
 fprintf( stderr, "nonbuffering: %d\n", p_nonbuffering );
