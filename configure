@@ -1,9 +1,9 @@
 #!/bin/sh
 
-TEMP=`getopt -o d46tus --long debug,ipv4,ipv6,tcp,udp,sctp -- $@`
+#TEMP=`getopt -o d46tus --long debug,ipv4,ipv6,tcp,udp,sctp -- $@`
 
-if [ $? != 0 ] ; 
-    then echo "Terminating..." >&2 ; exit 1 ; fi
+#if [ $? != 0 ] ; 
+#    then echo "Terminating..." >&2 ; exit 1 ; fi
 
 # Note the quotes around `$TEMP': they are essential!
 eval set -- "$TEMP"
@@ -11,32 +11,32 @@ eval set -- "$TEMP"
 echo -n "OPT=" >makefile
 while true ; do
         case "$1" in
-                -d|--debug)
+                --with-debug)
                     echo "With debug info"
                     echo -n " -g -DDEBUG" >>makefile
                     shift
                     ;;
-                -4|--ipv4)
+                --with-ipv4)
                     echo "With ipv4 support"
                     echo -n " -DUSEIP4" >>makefile
                     shift
                     ;;
-                -6|--ipv6)
+                --with-ipv6)
                     echo "With ipv6 support"
                     echo -n " -DUSEIP6" >>makefile
                     shift
                     ;;
-                -t|--tcp)
+                --with-tcp)
                     echo "With tcp support"
                     echo -n " -DUSETCP" >>makefile
                     shift
                     ;;
-                -u|--udp)
+                --with-udp)
                     echo "With udp support"
                     echo -n " -DUSEUDP" >>makefile
                     shift
                     ;;
-                -s|--sctp)
+                --with-sctp)
                     echo "With sctp support"
                     echo -n " -DUSESCTP" >>makefile
                     shift
@@ -45,9 +45,6 @@ while true ; do
                     break
                     ;;
                 *)
-                    echo "Internal error!"
-                    echo "$1"
-                    exit 1
                     ;;
         esac
 done
