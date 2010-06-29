@@ -33,10 +33,11 @@ while true ; do
                     echo -n " -DUSESCTP" >>makefile
                     shift
                     ;;
-                *)
-                    ;;
                 "")
                     break
+                    ;;
+                *)
+                    shift
                     ;;
         esac
 done
