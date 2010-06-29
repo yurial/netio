@@ -7,7 +7,6 @@
 #include "help.h"
 #include "cp.h"
 #include "collision.h"
-#include "examples.h"
 
 char**  p_targetv      = NULL;
 int     p_targetc      = 0;
