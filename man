@@ -72,9 +72,9 @@ EXAMPLE
 
 	$ netio unix:../mysocket
 
-	$ echo "MBX7Z86PRQYUHH13NKMTNQJGZY6ECTE=" | netio -w 3 10.40.100.10:31337 >>answer
+	$ echo "MBX7Z86PRQYUHH13NKMTNQJGZY6ECTE=" | netio -w 3s 10.40.100.10:31337 >>answer
 
-	$ netio -snl -c"netio -sn unix:/var/run/mysqld/mysqld.sock" 0.0.0.0:3306
+	$ netio -snl --io 'every:"netio -sn unix:/var/run/mysqld/mysqld.sock"' 0.0.0.0:3306
 
 	host1 $ netio -l1 -o dump.raw 0.0.0.0:1010
 	host2 # tcpdump -i wlan0 -w - |netio host1:1010
