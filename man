@@ -53,8 +53,6 @@ OPTIONS
 	-s --sync         
 		use sync() after write to stdout
 
-	-n	enable stdin non-buffering mode
-
 	-b --buff <size>[K|M|G]
 		buffer for stdin, default 1K
 		K - Kilobytes
