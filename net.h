@@ -14,7 +14,25 @@
 
 #ifdef USEIP4
 #ifdef USETCP
-	#define USETCP4
+    #define USETCP4
+#endif
+#ifdef USEUDP
+    #define USEUDP4
+#endif
+#ifdef USESCTP
+    #define USESCTP4
+#endif
+#endif
+
+#ifdef USEIP6
+#ifdef USETCP
+    #define USETCP6
+#endif
+#ifdef USEUDP
+    #define USEUDP6
+#endif
+#ifdef USESCTP
+    #define USESCTP6
 #endif
 #endif
 
