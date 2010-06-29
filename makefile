@@ -1,7 +1,7 @@
 OPT=-g
 
-netio: netio.o help.o params.o mkserver.o mkclient.o net.o cp.o mainloop.o terminal.o set.o run.o collision.o examples.o makefile
-	gcc netio.o help.o params.o mkserver.o mkclient.o net.o cp.o mainloop.o terminal.o set.o run.o collision.o examples.o -o netio
+netio: netio.o help.o params.o mkserver.o mkclient.o net.o cp.o mainloop.o set.o run.o collision.o examples.o makefile
+	gcc netio.o help.o params.o mkserver.o mkclient.o net.o cp.o mainloop.o set.o run.o collision.o examples.o -o netio
 
 clean:
 	rm *.o netio
@@ -29,9 +29,6 @@ cp.o: cp.c cp.h
 
 mainloop.o: mainloop.c mainloop.h
 	gcc $(OPT) -c mainloop.c -o mainloop.o
-
-terminal.o: terminal.c terminal.h
-	gcc $(OPT) -c terminal.c -o terminal.o
 
 set.o: set.c set.h
 	gcc $(OPT) -c set.c -o set.o

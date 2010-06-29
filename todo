@@ -1,1 +1,2 @@
-multi program in|out redirect
+multitarget
+./configure

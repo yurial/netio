@@ -10,7 +10,6 @@
 #include "help.h"
 #include "params.h"
 #include "net.h"
-#include "terminal.h"
 #include "set.h"
 
 void sigquit(int signal);
@@ -23,9 +22,6 @@ struct TArray o_fd  = { NULL, 0 };
 
 int main(int argc, char* argv[])
 {
-GetStartTerminal();
-atexit( SetStartTerminal );
-
 if ( argc < 2 )
     {
     help();
