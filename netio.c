@@ -61,28 +61,28 @@ else
 	}
     }
 
+int index;
+int proto;
 if ( p_server )
     {
-    int proto;
-    int server_sock = mkserver( p_targetv[0], &proto );
-    if ( net_params[proto].m_type == SOCK_STREAM )
+    for (index = 0; index < p_targetc; ++index)
         {
-        add( &s_fd, server_sock );
-        mainloop();
-	}
-    else
-        {
-        add( &c_fd, server_sock );
-        mainloop();
+        int server_sock = mkserver( p_targetv[index], &proto );
+        if ( net_params[proto].m_type == SOCK_STREAM )
+            add( &s_fd, server_sock );
+	else
+            add( &c_fd, server_sock );
         }
     }
 else
     {
-    int proto;
-    int client_sock = mkclient( p_targetv[0], &proto );
-    onconnect( client_sock );
-    mainloop();
+    for (index = 0; index < p_targetc; ++index) 
+        {
+	int client_sock = mkclient( p_targetv[index], &proto );
+        onconnect( client_sock );
+        }
     }
+mainloop();
 
 return 0;
 };
