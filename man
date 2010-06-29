@@ -6,7 +6,7 @@ NAME
 	netio - bind stdin & stdout with socket
 
 SYNOPSIS
-	netio [-l [-1]] [-q <count>] [-w <sec>] [-s] [-n] [-b <size[K|M|G]>] <target>
+	netio [-l [-1]] [-q <count>] [-w <msec[s|m|h]>] [-s] [-n] [-b <size[K|M|G]>] <target>
 TODO:	[{[-i][-o]|--io} {once|every}:<command>]
 	<target>:       <local>|<net>
 	<net>:          [<proto>://]<host>:<port>, 
@@ -47,8 +47,11 @@ OPTIONS
 	--io     {once|every}:<command>
 		TODO:
 
-	-w --wait <seconds>        
-		wait <seconds> seconds after EOF before closing a socket
+	-w --wait <msec>        
+		wait <msec> milli seconds after EOF before closing a socket
+		s - for seconds
+		m - for minutes
+		h - for hours
 
 	-s --sync         
 		use sync() after write to stdout

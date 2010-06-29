@@ -117,7 +117,20 @@ while( 1 )
             break;
         case 'w':
             {
-            p_wait = atoi( optarg );
+	    char* pend;
+            p_wait = strtol( optarg, &pend, 10 );
+            switch ( *pend )
+	        {
+		case 's':
+	            p_wait *= 1000;
+		    break;
+	        case 'm':
+	            p_wait *= 1000 * 60;
+		    break;
+		case 'h':
+		    p_wait *= 1000 * 60 * 60;
+		    break;
+	        }
             }
             break;
         case 's':

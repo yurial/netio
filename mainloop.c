@@ -71,6 +71,19 @@ del( &i_fd, index );
 del( &o_fd, index );
 }
 
+int tvtoms(struct timeval tv)
+{
+return tv.tv_usec / 1000 + tv.tv_sec * 1000;
+}
+
+struct timeval mstotv(int ms)
+{
+struct timeval tv;
+tv.tv_usec = (ms % 1000) * 1000;
+tv.tv_sec = ms / 1000;
+return tv;
+}
+
 void mainloop()
 {
 int ret;
@@ -80,31 +93,50 @@ char* buff = (char*)malloc( p_buffsize );
 fd_set set;
 struct timeval  timeout;
 struct timeval* ptimeout = NULL;
-timeout.tv_usec = 1;
-timeout.tv_sec = 0;
 
 while ( (s_fd.m_count | c_fd.m_count) != 0 )
 {
+int index;
+
+/*calc new timeout*/
+int mstimeout = 1<<31 - 1;
+for (index = 0; index < c_ttl.m_count; ++index)
+    if ( c_ttl.m_array[index] > 0 && c_ttl.m_array[index] < mstimeout )
+        mstimeout = c_ttl.m_array[index];
+timeout = mstotv( mstimeout );
+/**/
+
 mkfdset( &set );
 int nfds = mknfds();
 int nready = select( nfds, &set, NULL, NULL, ptimeout );
 int bbreak = 0;
-int index;
-if ( nready == 0 ) //time out
+/*calc new ttl*/
+if ( ptimeout )
     {
+    int passedtime = mstimeout - tvtoms( timeout );
+
     for (index = 0; index < c_ttl.m_count; ++index)
         {
-	if ( c_ttl.m_array[ index ] > 0 )
-	    --(c_ttl.m_array[ index ]);
-	if ( c_ttl.m_array[ index ] == 0 )
+        if ( c_ttl.m_array[ index ] > 0 )
+            c_ttl.m_array[ index ] -= passedtime;
+        if ( c_ttl.m_array[ index ] == 0 )
+            {
 	    disconnect( index );
-	}
+	    --index; // after dissconnect count of elements decreminate
+	    }
+        }
+
     for (index = 0; index < c_ttl.m_count; ++index)
         if ( c_ttl.m_array[index] != -1 )
-            continue;
-    ptimeout = NULL;
-    continue;
+            bbreak = 1;
+    if ( bbreak == 0 )
+        ptimeout = NULL;
+    bbreak = 0;
     }
+/**/
+
+if ( nready == 0 )
+    continue;
 
 if ( nready == -1 )
     {
@@ -114,7 +146,7 @@ if ( nready == -1 )
 
 for (index = 0; nready > 0 && index < s_fd.m_count; ++index)
     {
-    if ( FD_ISSET( s_fd.m_array[index], &set ) )
+    if ( s_fd.m_array[index] >= 0 && FD_ISSET( s_fd.m_array[index], &set ) )
         {
 	bbreak = 1;
 	int client_sock = accept( s_fd.m_array[index], NULL, NULL );
@@ -131,7 +163,7 @@ if ( bbreak > 0 )
 
 for (index = 0; nready > 0 && index < c_fd.m_count; ++index)
     {
-    if ( FD_ISSET( c_fd.m_array[index], &set ) )
+    if ( c_fd.m_array[index] >= 0 && FD_ISSET( c_fd.m_array[index], &set ) )
         {
 	bbreak = 1;
 	int recvcount = recv( c_fd.m_array[index], buff, p_buffsize, 0 );
@@ -154,11 +186,16 @@ if ( bbreak > 0 )
 
 for (index = 0; nready > 0 && index < i_fd.m_count; ++index)
     {
-    if ( FD_ISSET( i_fd.m_array[index], &set ) )
+    if ( i_fd.m_array[index] >= 0 && FD_ISSET( i_fd.m_array[index], &set ) )
         {
         int readcount = read( i_fd.m_array[index], buff, p_buffsize  );
         if ( readcount == 0 || readcount == -1 )
 	    {
+	    if ( p_wait == 0 )
+	        {
+	    	disconnect( index );
+		break;
+		}
 	    ptimeout = (p_wait == -1)? NULL : &timeout;
 	    close( i_fd.m_array[index] );
 	    index = (p_inevery || p_ioevery)? index-1 : -1;
