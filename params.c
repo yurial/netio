@@ -24,10 +24,9 @@ char*   p_iocmd        = NULL;
 int     p_ioevery      = 0;
 int     p_wait         = 0;
 int     p_sync         = 0;
-int     p_nonbuffering = 0;
 int     p_buffsize     = 1024;
 
-const static char options[] = "hl1q:c:i:o:w:snb:";
+const static char options[] = "hl1q:c:i:o:w:sb:";
 const static struct option long_options[] = {
 	{ "io",        1, 0,  0  },
         { "help",      0, 0, 'h' },
@@ -126,11 +125,6 @@ while( 1 )
             p_sync = 1;
             }
             break;
-        case 'n':
-            {
-            p_nonbuffering = 1;
-            }
-            break;
         case 'b':
             {
 	    char* pend;
@@ -178,7 +172,6 @@ fprintf( stderr, "out %s:%d\n", p_outcmd, p_outevery );
 fprintf( stderr, "inout: %s:%d\n", p_iocmd, p_ioevery );
 fprintf( stderr, "wait: %d\n", p_wait );
 fprintf( stderr, "sync: %d\n", p_sync );
-fprintf( stderr, "nonbuffering: %d\n", p_nonbuffering );
 fprintf( stderr, "buffsize: %d\n", p_buffsize );
 #endif
 

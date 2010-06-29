@@ -15,7 +15,6 @@ extern char*  p_iocmd;
 extern int    p_ioevery;
 extern int    p_wait;
 extern int    p_sync;
-extern int    p_nonbuffering;
 extern int    p_buffsize;
 
 void params(int argc, char* argv[]);

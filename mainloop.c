@@ -23,7 +23,6 @@ if ( p_once )
 
 int in = STDIN_FILENO;
 int out = STDOUT_FILENO;
-
 if ( p_ioevery )
     {
     int ret = run( p_iocmd, &in, &out );
@@ -67,6 +66,7 @@ close( c_fd.m_array[index] );
 if ( p_outevery || p_ioevery )
     close( o_fd.m_array[index] );
 del( &c_fd, index );
+del( &c_ttl, index );
 del( &i_fd, index );
 del( &o_fd, index );
 }
@@ -136,7 +136,10 @@ for (index = 0; nready > 0 && index < c_fd.m_count; ++index)
 	bbreak = 1;
 	int recvcount = recv( c_fd.m_array[index], buff, p_buffsize, 0 );
         if ( recvcount == -1 || recvcount == 0 )
+	    {
 	    disconnect( index );
+	    break;
+	    }
         ret = write( o_fd.m_array[index], buff, recvcount );
 	//TODO:
 	assert( ret != -1 );
@@ -165,7 +168,7 @@ for (index = 0; nready > 0 && index < i_fd.m_count; ++index)
                 i_fd.m_array[index] = -1;
 	        c_ttl.m_array[index] = p_wait;
 		}
-	    while (nready > 0 && index < c_fd.m_count && !(p_inevery || p_ioevery));
+	    while (nready > 0 && index < c_fd.m_count-1 && !(p_inevery || p_ioevery));
 	    continue;
 	    }
 	
@@ -180,7 +183,7 @@ for (index = 0; nready > 0 && index < i_fd.m_count; ++index)
 	        disconnect( index );
 	        }
 	    }
-        while (nready > 0 && index < c_fd.m_count && !(p_inevery || p_ioevery));
+        while (nready > 0 && index < c_fd.m_count-1 && !(p_inevery || p_ioevery));
 	}
     }
 }

@@ -3,7 +3,7 @@
 
 #include "net.h"
 
-int mkserver(char* target, enum PROTO* pproto);
+int mkserver(char* target, int* pproto);
 
 #endif
 

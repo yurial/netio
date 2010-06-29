@@ -67,7 +67,7 @@ else
 
 if ( p_server )
     {
-    enum PROTO proto;
+    int proto;
     int server_sock = mkserver( p_targetv[0], &proto );
     if ( net_params[proto].m_type == SOCK_STREAM )
         {
@@ -82,9 +82,9 @@ if ( p_server )
     }
 else
     {
-    enum PROTO proto;
+    int proto;
     int client_sock = mkclient( p_targetv[0], &proto );
-    add( &c_fd, client_sock );
+    onconnect( client_sock );
     mainloop();
     }
 

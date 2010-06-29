@@ -12,7 +12,7 @@
 #include "net.h"
 #include "cp.h"
 
-int mkserver(char* target, enum PROTO* pproto)
+int mkserver(char* target, int* pproto)
 {
 int server_addr_size = 0;
 struct sockaddr*    server_addr;
@@ -26,8 +26,7 @@ memset( &server_addr_in6, 0, sizeof(server_addr_in6) );
 struct hostent* host;
 int port = 0;
 
-enum PROTO proto = parsetarget( target, &host, &port );
-
+int proto = parsetarget( target, &host, &port );
 int server_sock = socket( net_params[proto].m_domain, net_params[proto].m_type, net_params[proto].m_protocol );
 if ( server_sock == -1 )
     {

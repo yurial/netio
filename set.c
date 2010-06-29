@@ -49,11 +49,14 @@ FD_ZERO( set );
 
 int index;
 for (index = 0; index < s_fd.m_count; ++index)
-    FD_SET( s_fd.m_array[index], set );
+    if ( s_fd.m_array[index] >= 0 )
+        FD_SET( s_fd.m_array[index], set );
 for (index = 0; index < c_fd.m_count; ++index)
-    FD_SET( c_fd.m_array[index], set );
+    if ( c_fd.m_array[index] >= 0 )
+        FD_SET( c_fd.m_array[index], set );
 for (index = 0; index < i_fd.m_count; ++index)
-    FD_SET( i_fd.m_array[index], set );
+    if ( i_fd.m_array[index] >= 0 )
+        FD_SET( i_fd.m_array[index], set );
 }
 
 int mknfds()

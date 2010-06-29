@@ -3,7 +3,7 @@
 
 #include "net.h"
 
-int mkclient(char* target, enum PROTO* pproto);
+int mkclient(char* target, int* pproto);
 
 #endif
 
