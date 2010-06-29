@@ -1,7 +1,7 @@
 #ifndef COLLISIONH
 #define COLLISIONH
 
-int collision_check();
+void collision_check();
 
 #endif
 

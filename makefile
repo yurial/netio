@@ -11,7 +11,7 @@ help.o: help.c help.h
 	gcc -c help.c -o help.o
 
 params.o: params.c params.h
-	gcc -c params.c -o params.o
+	gcc -c params.c -o params.o -DDEBUG
 
 mkserver.o: mkserver.c mkserver.h
 	gcc -c mkserver.c -o mkserver.o
@@ -20,7 +20,7 @@ mkclient.o: mkclient.c mkclient.h
 	gcc -c mkclient.c -o mkclient.o
 
 net.o: net.c net.h
-	gcc -c net.c -o net.o
+	gcc -c net.c -o net.o -DUSEIP4 -DUSETCP
 
 cp.o: cp.c cp.h
 	gcc -c cp.c -o cp.o

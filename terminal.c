@@ -29,7 +29,8 @@ T.c_lflag &= ~ICANON;   /* one char @ a time */
 ioctl( 0, TCSETS, &T ); /* set new terminal mode */
 }
 
-int setstdin(char* file)
+/*
+ * int setstdin(char* file)
 {
 int f_stdin = open( file, O_RDONLY );
 if ( !f_stdin )
@@ -48,4 +49,5 @@ dup2( f_stdout, fileno(stdout) );
 close( f_stdout );
 return EXIT_SUCCESS;
 }
+*/
 

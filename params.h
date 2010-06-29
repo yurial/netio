@@ -3,13 +3,16 @@
 
 extern char** p_targetv;
 extern int    p_targetc;
-extern int    p_server;	//use as server
-extern int    p_once;	//exit after socket closed
+extern int    p_server;
+extern int    p_once;
 extern int    p_connqueue;
 extern char*  p_cmd;
-extern char*  p_inopt;
-extern char*  p_outopt;
-extern char*  p_ioopt;
+extern char*  p_incmd;
+extern int    p_inevery;
+extern char*  p_outcmd;
+extern int    p_outevery;
+extern char*  p_iocmd;
+extern int    p_ioevery;
 extern int    p_wait;
 extern int    p_sync;
 extern int    p_nonbuffering;

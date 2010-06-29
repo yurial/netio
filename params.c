@@ -16,9 +16,12 @@ int     p_server       = 0;
 int     p_once         = 0;
 int     p_connqueue    = 1;
 char*   p_cmd          = NULL;
-char*   p_inout        = NULL;
-char*   p_outopt       = NULL;
-char*   p_ioopt        = NULL;
+char*   p_incmd        = NULL;
+int     p_inevery      = 0;
+char*   p_outcmd       = NULL;
+int     p_outevery     = 0;
+char*   p_iocmd        = NULL;
+int     p_ioevery      = 0;
 int     p_wait         = 0;
 int     p_sync         = 0;
 int     p_nonbuffering = 0;
@@ -40,6 +43,23 @@ const static struct option long_options[] = {
         { 0,           0, 0,  0  }
     };
 
+char* getcmd(char* str, int* every)
+{
+assert( every );
+
+if ( !memcmp( str, "every:", 6 ) )
+    {
+    *every = 1;
+    return str + 6;
+    }
+else if ( !memcmp( str, "once:", 5 ) )
+    {
+    *every = 0;
+    return str + 5;
+    }
+return NULL;
+}
+
 void params(int argc, char* argv[])
 {
 int option;
@@ -54,10 +74,9 @@ while( 1 )
         {
 	case 0:
             {
-            fprintf( stderr, "long option!\n" );
 	    if (option_index == 0 )
 	        {
-		p_ioopt = cp( optarg );
+		p_iocmd = cp( getcmd( optarg, &p_ioevery ) );
 		}
 	    }
             break;
@@ -89,12 +108,12 @@ while( 1 )
 	    break;
         case 'i':
             {
-            p_inopt = cp( optarg );
+            p_incmd = cp( getcmd( optarg, &p_inevery ) );
             }
             break;
         case 'o':
             {
-            p_outopt = cp( optarg );
+            p_outcmd = cp( getcmd( optarg, &p_outevery ) );
             }
             break;
         case 'w':
@@ -146,9 +165,6 @@ else
     exit( EXIT_FAILURE );
     }
 
-/* collision check */
-collision_check();
-
 #ifdef DEBUG
 int i;
 for (i = 0; i < p_targetc; ++i)
@@ -157,12 +173,15 @@ fprintf( stderr, "server: %d\n", p_server );
 fprintf( stderr, "once: %d\n", p_once );
 fprintf( stderr, "connqueue: %d\n", p_connqueue );
 fprintf( stderr, "cmd: %s\n", p_cmd );
-fprintf( stderr, "in: %s\n", p_inopt );
-fprintf( stderr, "out %s\n", p_outopt );
-fprintf( stderr, "inout: %s\n", p_ioopt );
+fprintf( stderr, "in: %s:%d\n", p_incmd, p_inevery );
+fprintf( stderr, "out %s:%d\n", p_outcmd, p_outevery );
+fprintf( stderr, "inout: %s:%d\n", p_iocmd, p_ioevery );
 fprintf( stderr, "wait: %d\n", p_wait );
 fprintf( stderr, "sync: %d\n", p_sync );
 fprintf( stderr, "nonbuffering: %d\n", p_nonbuffering );
 fprintf( stderr, "buffsize: %d\n", p_buffsize );
 #endif
+
+/* collision check */
+collision_check();
 }
