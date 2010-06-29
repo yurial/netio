@@ -74,13 +74,18 @@ EXAMPLE
 
 	$ echo "MBX7Z86PRQYUHH13NKMTNQJGZY6ECTE=" | netio -w 3s 10.40.100.10:31337 >>answer
 
-	$ netio -snl --io 'every:"netio -sn unix:/var/run/mysqld/mysqld.sock"' 0.0.0.0:3306
+	$ netio -snl --io 'every:netio -sn unix:/var/run/mysqld/mysqld.sock' 0.0.0.0:3306
 
 	host1 $ netio -l1 -o dump.raw 0.0.0.0:1010
 	host2 # tcpdump -i wlan0 -w - |netio host1:1010
 
 	host1 # netio -sl -c/bin/bash 0.0.0.0:23
 	host2 $ netio -s host1:23
+
+	$ netio -w 5s -l tcp://127.0.0.1:2222 tcp://127.0.0.33333 -i 'every:echo "qwe qwe"'
+
+	$ netio tcp://127.0.0.1:1111 tcp://127.0.0.1:2222
+
 
 AUTHORS
 	This manual page was written by Yuri Dyachenko, Andrey Zaikin, Den Menshikov.
