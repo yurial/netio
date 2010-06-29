@@ -26,7 +26,6 @@ fprintf( stderr, "%s\n", "-c --predirect    redirect program to exec command" );
 fprintf( stderr, "%s\n", "-p --credirect    redirect connection to exec command" );
 fprintf( stderr, "%s\n", "-w --wait         wait <sec> seconds after EOF before closing a socket" );
 fprintf( stderr, "%s\n", "-s --sync         use sync() after write to stdout" );
-fprintf( stderr, "%s\n", "-n                enable stdin non-buffering mode" );
 fprintf( stderr, "%s\n", "-b --buff         buffer for stdin, default 1K" );
 
 examples();
