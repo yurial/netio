@@ -3,32 +3,32 @@
 echo -n "OPT=" >makefile
 while true ; do
         case "$1" in
-                --with-debug)
+                --with-debug|--enable-debug)
                     echo "With debug info"
                     echo -n " -g -DDEBUG" >>makefile
                     shift
                     ;;
-                --with-ipv4)
+                --with-ipv4|--enable-ipv4)
                     echo "With ipv4 support"
                     echo -n " -DUSEIP4" >>makefile
                     shift
                     ;;
-                --with-ipv6)
+                --with-ipv6|--enable-ipv6)
                     echo "With ipv6 support"
                     echo -n " -DUSEIP6" >>makefile
                     shift
                     ;;
-                --with-tcp)
+                --with-tcp|--enable-tcp)
                     echo "With tcp support"
                     echo -n " -DUSETCP" >>makefile
                     shift
                     ;;
-                --with-udp)
+                --with-udp|--enable-udp)
                     echo "With udp support"
                     echo -n " -DUSEUDP" >>makefile
                     shift
                     ;;
-                --with-sctp)
+                --with-sctp|--enable-sctp)
                     echo "With sctp support"
                     echo -n " -DUSESCTP" >>makefile
                     shift
