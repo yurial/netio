@@ -22,7 +22,7 @@ uninstall:
 
 man: man/man1/netio.1.bz
 
-man/man1/netio.1.bz2: man/man.1.en
+man/man1/netio.1.bz: man/man.1.en
 	mkdir man/man1
 	bzip2 -zkc --best man/man.1.en >man/man1/netio.1.bz
 
