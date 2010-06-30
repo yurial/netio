@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+<herd>netio</herd>
+<longdescription>tool for redirect stdin, stdout or program to network connection</longdescription>
+</pkgmetadata>
