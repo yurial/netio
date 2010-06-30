@@ -27,6 +27,11 @@ struct hostent* host;
 int port = 0;
 
 int proto = parsetarget( target, &host, &port );
+if ( host == NULL )
+    {
+    fprintf( stderr, "invalid host\n" );
+    exit( EXIT_FAILURE );
+    }
 
 int client_sock = socket( net_params[proto].m_domain, net_params[proto].m_type, net_params[proto].m_protocol );
 if ( client_sock == -1 )
