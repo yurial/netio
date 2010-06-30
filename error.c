@@ -5,6 +5,9 @@
 void error_socket(int error)
 {
 char* msg = NULL;
+#ifdef USEMINIMAL
+msg = "socket()";
+#else
 switch ( error )
     {
     case EACCES:
@@ -27,6 +30,6 @@ switch ( error )
         msg = "Unknown protocol, or protocol family not available.";
         break;
     }
+#endif
 fprintf( stderr, "error: %s\n", msg );
-exit( EXIT_FAILURE );
 }
