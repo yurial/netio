@@ -7,6 +7,7 @@
 #include <sys/socket.h>
 #include <netdb.h>
 
+#include "error.h"
 #include "params.h"
 #include "mkserver.h"
 #include "net.h"
@@ -36,7 +37,7 @@ if ( host == NULL )
 int server_sock = socket( net_params[proto].m_domain, net_params[proto].m_type, net_params[proto].m_protocol );
 if ( server_sock == -1 )
     {
-    fprintf( stderr, "socket() error\n" );
+    error_socket( errno );
     exit( EXIT_FAILURE );
     }
 
