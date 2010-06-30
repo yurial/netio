@@ -5,10 +5,26 @@ netio: makefile netio.o help.o params.o mkserver.o mkclient.o net.o cp.o mainloo
 
 clean:
 	rm -f *.o netio
+	rm -r man/man1
 
 distclean:
 	rm -f *.o netio
-	rm makefile
+	rm -r man/man1
+	rm -f makefile
+
+install: netio man
+	cp netio /usr/bin
+	cp man/man1/netio.1.bz /usr/share/man/man1
+
+uninstall:
+	rm -f /usr/bin/netio
+	rm -f /usr/man/man1/netio.1.bz
+
+man: man/man1/netio.1.bz
+
+man/man1/netio.1.bz2: man/man.1.en
+	mkdir man/man1
+	bzip2 -zkc --best man/man.1.en >man/man1/netio.1.bz
 
 netio.o: makefile netio.c netio.h
 	gcc $(OPT) -c netio.c -o netio.o
