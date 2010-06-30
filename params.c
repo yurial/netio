@@ -171,22 +171,6 @@ else
     exit( EXIT_FAILURE );
     }
 
-#ifdef DEBUG
-int i;
-for (i = 0; i < p_targetc; ++i)
-    fprintf( stderr, "target: %s\n", p_targetv[i] );
-fprintf( stderr, "server: %d\n", p_server );
-fprintf( stderr, "once: %d\n", p_once );
-fprintf( stderr, "connqueue: %d\n", p_connqueue );
-fprintf( stderr, "cmd: %s\n", p_cmd );
-fprintf( stderr, "in: %s:%d\n", p_incmd, p_inevery );
-fprintf( stderr, "out %s:%d\n", p_outcmd, p_outevery );
-fprintf( stderr, "inout: %s:%d\n", p_iocmd, p_ioevery );
-fprintf( stderr, "wait: %d\n", p_wait );
-fprintf( stderr, "sync: %d\n", p_sync );
-fprintf( stderr, "buffsize: %d\n", p_buffsize );
-#endif
-
 /* collision check */
 collision_check();
 }
