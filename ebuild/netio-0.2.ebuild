@@ -2,7 +2,7 @@ DESCRIPTION="tool for redirect stdin, stdout or program to network connection"
 HOMEPAGE="http://www.yurial.ru/netio"
 SRC_URI="http://www.yurial.ru/netio/${P}.tar.gz"
 
-LICENSE="public-domain"
+LICENSE="GPL-3"
 SLOT="0"
 KEYWORDS="x86"
 IUSE="debug ipv4 ipv6 tcp udp sctp"
