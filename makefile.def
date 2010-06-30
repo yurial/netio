@@ -32,7 +32,7 @@ netio.tar.bz2: *.c *.h man/* configure makefile.def
 man: man/man1/netio.1.bz2
 
 man/man1/netio.1.bz2: man/man.1.en
-	mkdir man/man1
+	mkdir -p man/man1
 	bzip2 -zkc --best man/man.1.en >man/man1/netio.1.bz2
 
 netio.o: makefile netio.c netio.h

@@ -1,12 +1,34 @@
 .\" @(#)netio.1 0.2 000000 aeb
-.TH NETIO 1 "30 Jun 2010"
+.TH NETIO 1 "1 Jul 2010"
 .SH NAME
-netio \- bind stdin & stdout with socket
+netio \- bind stdin & stdout to socket
 .SH SYNOPSIS
-.HP 6
-\fBnetio\fR [\fB\-l\fR [\fB\-1\fR]] [\fB\-q\fR \fIcount\fR] [\fB-c\fR \fIcmd\fR] [\fB\-w\fR \fImsec\fR[s|m|h]] 
-[\fB-s\fR] [\fB-n\fR] [\fB-b\fR \fIsize\fR[K|M|G]>] [{[\fB\-i\fR][\fB\-o\fR]|\fB\-\-io\fR} {\fBonce\fR|\fBevery\fR}:\fIcommand\fR] \fItarget1\fR \fItarget2\fR \fI...\fR
+.HP 7
+.B netio
+.RB [ \-l
+.RB [ \-1 ]]
+.RB [ \-q
+.IR count ]
+.RB [ \-c
+.IR cmd ]
+.RB [ \-w
+.IR msec\fR[s|m|h]]
+.RB [ \-s ]
+.RB [ \-n ]
+.RB [ \-b
+.IR size\fR[K|M|G]]
+.RB [ --io
+.IR action
+|
+.RB ([ \-i
+.IR action ]
+.RB [ \-o
+.IR action ])]
+.IB target1
+.I "target2 ..."
 
+.br
+<action>:       {once|every}:\fIcommand\fR
 .br
 <target>:       <local>|<net>
 .br
@@ -29,12 +51,10 @@ netio \- bind stdin & stdout with socket
 show small help and exit
 .TP
 .B \-l \-\-listen
-listen (server mode)
+wait for incoming connection
 .TP
 .B \-1 \-\-once
-exit program after connection close
-.br
-usign with listen (server mode) only
+exit program on disconnect (can be used only with -l)
 .TP
 .B \-q \-\-connqueue
 maximum queue length of pending connections, default 1
@@ -43,15 +63,19 @@ maximum queue length of pending connections, default 1
 use \fIcommand\fR line instead of '/bin/sh \-c' for redirection
 .TP
 \fB\-i \-\-in\fR  {once|every}:\fIcommand\fR
-once:  for all connections will be one input descriptor assigned with <command>
+once: execute command once and use its I descriptor for every connection
 .br
-every: for all connections will be self input descriptor assigned with <command>
+every: execute command for every new connection and use its I descriptor
 .TP
 \fB\-o \-\-out\fR {once|every}:\fIcommand\fR
-TODO:
+once: execute command once and use its O descriptor for every connection
+.br
+every: execute command for every new connection and use its O descriptor
 .TP
 \fB\-\-io\fR     {once|every}:\fIcommand\fR
-TODO:
+once: execute command once and use its IO descriptor for every connection
+.br
+every: execute command for every new connection and use its IO descriptor
 .TP
 \fB\-w \-\-wait\fR \fImsec\fR[s|m|h]
 wait <msec> milli seconds after EOF before closing a socket
@@ -66,7 +90,7 @@ h \- for hours
 use sync() after write to stdout
 .TP
 \fB\-b \-\-buff\fR \fIsize\fR[K|M|G]
-buffer for stdin, default 1K
+buffer for stdin (in bytes), default 1K
 .br
 K \- Kilobytes
 .br
@@ -86,7 +110,7 @@ $ netio unix:../mysocket
 
 $ echo "MBX7Z86PRQYUHH13NKMTNQJGZY6ECTE=" |netio \-w 3s tcp://10.40.100.10:31337 >>answer
 
-$ netio \-sl \-\-io 'every:netio \-s unix:/var/run/mysqld/mysqld.sock' tcp://0.0.0.0:3306
+$ netio \-sl --io 'every:netio \-s unix:/var/run/mysqld/mysqld.sock' tcp://0.0.0.0:3306
 
 \fBhost1\fR $ netio \-l1 \-o dump.raw tcp://0.0.0.0:1010
 .br
@@ -104,4 +128,3 @@ $ netio tcp://127.0.0.1:1111 tcp://127.0.0.1:2222
 This manual page was written by Yuri Dyachenko, Andrey Zaikin, Den Menshikov.
 .br
 Tool written by Yuri Dyachenko.
-
