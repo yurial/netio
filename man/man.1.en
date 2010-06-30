@@ -16,7 +16,7 @@ netio \- bind stdin & stdout with socket
 .br
 <host>:         <ipv4 address>|<ipv6 address>|<host name>
 .br
-<port>:         single numeric 1-65535
+<port>:         single numeric 1-65535, 0 - random
 .br
 <local>:        unix:<path to unix socket>
 
