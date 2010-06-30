@@ -83,6 +83,8 @@ hostname[lenght] = 0;
 *host = gethostbyname2( hostname, net_params[index].m_domain );
 free( hostname );
 
+if ( *hostend == ']' )
+    ++hostend;
 ++hostend;
 struct servent* serv = getservbyname( hostend, net_params[index].m_protoname );
 if ( serv )
