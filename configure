@@ -8,6 +8,11 @@ while true ; do
                     echo -n " -g -DDEBUG" >>makefile
                     shift
                     ;;
+                --with-unixsock|--enable-unixsock
+                    echo "With unixsock support"
+                    echo -n " -DUSEUNIX" >>makefile
+                    shift
+                    ;;
                 --with-ipv4|--enable-ipv4)
                     echo "With ipv4 support"
                     echo -n " -DUSEIP4" >>makefile
