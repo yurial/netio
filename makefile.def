@@ -5,11 +5,12 @@ netio: makefile netio.o help.o params.o mkserver.o mkclient.o net.o cp.o mainloo
 
 clean:
 	rm -f *.o netio
-	rm -r man/man1
+	rm -rf man/man1
 
 distclean:
 	rm -f *.o netio
-	rm -r man/man1
+	rm -rf man/man1
+	rm -f *.gz *.bz2
 	rm -f makefile
 
 install: netio man
@@ -19,6 +20,14 @@ install: netio man
 uninstall:
 	rm -f /usr/bin/netio
 	rm -f /usr/man/man1/netio.1.bz
+
+dist: netio.tar.gz netio.tar.bz2
+
+netio.tar.gz: *.c *.h man/* configure makefile.def
+	tar --gzip -cf netio.tar.gz *.c *.h man/* configure makefile.def
+
+netio.tar.bz2: *.c *.h man/* configure makefile.def
+	tar --bzip2 -cf netio.tar.bz2  *.c *.h man/* configure makefile.def
 
 man: man/man1/netio.1.bz
 
