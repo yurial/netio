@@ -15,11 +15,11 @@ distclean:
 
 install: netio man
 	cp netio /usr/bin
-	cp man/man1/netio.1.bz /usr/share/man/man1
+	cp man/man1/netio.1.bz2 /usr/share/man/man1
 
 uninstall:
 	rm -f /usr/bin/netio
-	rm -f /usr/man/man1/netio.1.bz
+	rm -f /usr/man/man1/netio.1.bz2
 
 dist: netio.tar.gz netio.tar.bz2
 
@@ -29,11 +29,11 @@ netio.tar.gz: *.c *.h man/* configure makefile.def
 netio.tar.bz2: *.c *.h man/* configure makefile.def
 	tar --bzip2 -cf netio.tar.bz2  *.c *.h man/* configure makefile.def
 
-man: man/man1/netio.1.bz
+man: man/man1/netio.1.bz2
 
-man/man1/netio.1.bz: man/man.1.en
+man/man1/netio.1.bz2: man/man.1.en
 	mkdir man/man1
-	bzip2 -zkc --best man/man.1.en >man/man1/netio.1.bz
+	bzip2 -zkc --best man/man.1.en >man/man1/netio.1.bz2
 
 netio.o: makefile netio.c netio.h
 	gcc $(OPT) -c netio.c -o netio.o
