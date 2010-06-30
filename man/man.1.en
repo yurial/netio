@@ -4,7 +4,8 @@
 netio \- bind stdin & stdout with socket
 .SH SYNOPSIS
 .HP 6
-\fBnetio\fR [\fB\-l\fR [\fB\-1\fR]] [\fB\-q\fR \fIcount\fR] [\fB\-w\fR \fImsec\fR[s|m|h]] [\fB-s\fR] [\fB-n\fR] [\fB-b\fR \fIsize\fR[K|M|G]>] [{[\fB\-i\fR][\fB\-o\fR]|\fB\-\-io\fR} {\fBonce\fR|\fBevery\fR}:\fIcommand\fR] \fItarget1\fR \fItarget2\fR \fI...\fR
+\fBnetio\fR [\fB\-l\fR [\fB\-1\fR]] [\fB\-q\fR \fIcount\fR] [\fB-c\fR \fIcmd\fR] [\fB\-w\fR \fImsec\fR[s|m|h]] 
+[\fB-s\fR] [\fB-n\fR] [\fB-b\fR \fIsize\fR[K|M|G]>] [{[\fB\-i\fR][\fB\-o\fR]|\fB\-\-io\fR} {\fBonce\fR|\fBevery\fR}:\fIcommand\fR] \fItarget1\fR \fItarget2\fR \fI...\fR
 
 .br
 <target>:       <local>|<net>
@@ -39,7 +40,7 @@ usign with listen (server mode) only
 maximum queue length of pending connections, default 1
 .TP
 \fB\-c \-\-cmd\fR \fIcommand\fR
-use \fIcommand\fR line VMESTO '/bin/sh \-c' for redirection
+use \fIcommand\fR line instead of '/bin/sh \-c' for redirection
 .TP
 \fB\-i \-\-in\fR  {once|every}:\fIcommand\fR
 once:  for all connections will be one input descriptor assigned with <command>
@@ -87,13 +88,13 @@ $ echo "MBX7Z86PRQYUHH13NKMTNQJGZY6ECTE=" |netio \-w 3s tcp://10.40.100.10:31337
 
 $ netio \-sl \-\-io 'every:netio \-s unix:/var/run/mysqld/mysqld.sock' tcp://0.0.0.0:3306
 
-host1 $ netio \-l1 \-o dump.raw tcp://0.0.0.0:1010
+\fBhost1\fR $ netio \-l1 \-o dump.raw tcp://0.0.0.0:1010
 .br
-host2 # tcpdump \-i wlan0 \-w \- |netio tcp://host1:1010
+\fBhost2\fR # tcpdump \-i wlan0 \-w \- |netio tcp://host1:1010
 
-host1 # netio \-sl \-c/bin/bash tcp://0.0.0.0:23
+\fBhost1\fR # netio \-sl \-c/bin/bash tcp://0.0.0.0:23
 .br
-host2 $ netio \-s tcp://host1:23
+\fBhost2\fR $ netio \-s tcp://host1:23
 
 $ netio \-w 5s \-l tcp://127.0.0.1:2222 tcp://127.0.0.33333 \-i 'every:echo "qwe qwe"'
 
