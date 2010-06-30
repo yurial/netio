@@ -50,6 +50,8 @@ if ( proto == -1 )
     }
 
 char endchar = ( *target == '[' )? ']' : ':';
+if ( *target == '[' )
+    ++target;
 
 char* hostend;
 for (hostend = target; *hostend && *hostend != endchar; ++hostend)
@@ -73,9 +75,6 @@ if ( !*hostend )
         fprintf( stderr, "port not specified\n" );
         exit( EXIT_FAILURE );
         }
-
-if ( *hostend == ']' )
-    ++hostend;
 
 int lenght = hostend - target;
 char* hostname= malloc( lenght + 1 );
