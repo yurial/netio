@@ -5,11 +5,9 @@
 void error_socket(int error)
 {
 char* msg = NULL;
-#ifdef USEMINIMAL
-msg = "socket()";
-#else
 switch ( error )
     {
+#ifndef USEMINIMAL
     case EACCES:
         msg = "Permission  to  create  a  socket  of the specified type and/or protocol is denied.";
 	break;
@@ -29,7 +27,58 @@ switch ( error )
     case EINVAL:
         msg = "Unknown protocol, or protocol family not available.";
         break;
-    }
 #endif
+    default:
+        msg = "socket()";
+	break;
+    }
 fprintf( stderr, "error: %s\n", msg );
 }
+
+void error_malloc(int error)
+{
+char* msg = NULL;
+switch ( error )
+    {
+#ifndef USEMINIMAL
+    case ENOMEM:
+        msg = "no memory";
+	break;
+#endif
+    default:
+        msg = "malloc()";
+	break;
+    }
+fprintf( stderr, "error: %s\n", msg );
+}
+
+/*
+void error_(int error)
+{
+char* msg = NULL;
+switch ( error )
+    {
+#ifndef USEMINIMAL
+#endif
+    default:
+        msg = "";
+	break;
+    }
+fprintf( stderr, "error: %s\n", msg );
+}
+*/
+
+/*void error_(int error)
+{
+char* msg = NULL;
+switch ( error )
+    {
+#ifndef USEMINIMAL
+#endif
+    default:
+        msg = "";
+	break;
+    }
+fprintf( stderr, "error: %s\n", msg );
+}
+*/

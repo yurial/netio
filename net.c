@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
+#include "error.h"
 #include "net.h"
 #include "cp.h"
 
@@ -63,9 +64,21 @@ if ( !*hostend )
 	if ( net_params[index].m_str == STR_UNIX )
         {
 	*host = malloc( sizeof(struct hostent) );
+	if ( *host == NULL )
+	    {
+            error_malloc( errno );
+	    exit( EXIT_FAILURE );
+	    }
+
 	memset( *host, 0, sizeof(struct hostent) );
         (*host)->h_length = strlen( target );
 	(*host)->h_addr_list = malloc( sizeof(char*) );
+	if ( (*host)->h_addr_list == NULL )
+	    {
+            error_malloc( errno );
+	    exit( EXIT_FAILURE );
+	    }
+
 	*((*host)->h_addr_list) = cp( target );
         return proto;
 	}
@@ -78,6 +91,12 @@ if ( !*hostend )
 
 int lenght = hostend - target;
 char* hostname= malloc( lenght + 1 );
+if ( hostname == NULL )
+    {
+    error_malloc( errno );
+    exit( EXIT_FAILURE );
+    }
+
 memcpy( hostname, target, lenght );
 hostname[lenght] = 0;
 *host = gethostbyname2( hostname, net_params[index].m_domain );

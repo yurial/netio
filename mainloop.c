@@ -10,6 +10,7 @@
 #include "mainloop.h"
 #include "params.h"
 #include "set.h"
+#include "error.h"
 
 void onconnect(int client_sock)
 {
@@ -89,6 +90,11 @@ void mainloop()
 int ret;
 /*p_buffsize*/
 char* buff = (char*)malloc( p_buffsize );
+if ( buff == NULL )
+    {
+    error_malloc( errno );
+    exit( EXIT_FAILURE );
+    }
 
 fd_set set;
 struct timeval  timeout;
