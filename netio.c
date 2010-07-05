@@ -7,6 +7,7 @@
 #include <signal.h>
 
 #include "netio.h"
+#include "error.h"
 #include "help.h"
 #include "params.h"
 #include "net.h"
@@ -38,8 +39,18 @@ if ( p_iocmd && !p_ioevery )
     int ret = run( p_iocmd, &i_fd, &o_fd );
     if ( ret == EXIT_FAILURE )
         exit( EXIT_FAILURE );
-    dup2( i_fd, STDIN_FILENO );
-    dup2( o_fd, STDOUT_FILENO );
+    ret = dup2( i_fd, STDIN_FILENO );
+    if ( ret == -1 )
+        {
+	error_dup2( errno );
+	exit( EXIT_FAILURE );
+        }
+    ret = dup2( o_fd, STDOUT_FILENO );
+    if ( ret == -1 )
+        {
+	error_dup2( errno );
+        exit( EXIT_FAILURE );
+        }
     }
 else
     {
@@ -49,7 +60,12 @@ else
 	int ret = run( p_incmd, &i_fd, NULL );
 	if ( ret == EXIT_FAILURE )
 	    exit( EXIT_FAILURE );
-	dup2( i_fd, STDIN_FILENO );
+	ret = dup2( i_fd, STDIN_FILENO );
+        if ( ret == -1 )
+            {
+	    error_dup2( errno );
+            exit( EXIT_FAILURE );
+            }
 	}
     if ( p_outcmd && !p_outevery )
         {
@@ -57,7 +73,12 @@ else
 	int ret = run( p_outcmd, NULL, &o_fd );
 	if ( ret == EXIT_FAILURE )
 	    exit( EXIT_FAILURE );
-	dup2( o_fd, STDOUT_FILENO );
+	ret = dup2( o_fd, STDOUT_FILENO );
+        if ( ret == -1 )
+            {
+	    error_dup2( errno );
+            exit( EXIT_FAILURE );
+            }
 	}
     }
 

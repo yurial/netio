@@ -2,6 +2,7 @@
 #include <unistd.h>
 #include "run.h"
 #include "params.h"
+#include "error.h"
 
 int run(char* command, int* in, int* out)
 {
@@ -33,12 +34,22 @@ if ( pid == 0 )
     if ( in )
         {
         close( pipe_in[0] );
-        dup2( pipe_in[1], STDOUT_FILENO );
+        ret = dup2( pipe_in[1], STDOUT_FILENO );
+	if ( ret == -1 )
+	    {
+	    error_dup2( errno );
+            return EXIT_FAILURE;
+	    }
         }
     if ( out )
         {
 	close( pipe_out[1] );
-        dup2( pipe_out[0], STDIN_FILENO );
+        ret = dup2( pipe_out[0], STDIN_FILENO );
+	if ( ret == -1 )
+	    {
+	    error_dup2( errno );
+	    return EXIT_FAILURE;
+            }
 	}
     execl( p_cmd, "sh", "-c", command, (char*)NULL );
     }

@@ -191,6 +191,35 @@ switch ( error )
 fprintf( stderr, "error: %s\n", msg );
 }
 
+void error_dup2(int error)
+{
+char* msg = NULL;
+switch ( error )
+    {
+#ifndef USEMINIMAL
+    case EBADF:
+        msg = "oldfd isn't an open file descriptor, or newfd is out of the allowed range for file descriptors.";
+	break;
+    case EBUSY:
+        msg = "(Linux only) This may be returned by dup2() or dup3() during a race condition with open(2) and dup().";
+	break;
+    case EINTR:
+        msg = "The dup2() or dup3() call was interrupted by a signal; see signal(7).";
+	break;
+    case EINVAL:
+        msg = "(dup3()) flags contain an invalid value.  Or, oldfd was equal to newfd.";
+	break;
+    case EMFILE:
+        msg = "The process already has the maximum number of file descriptors open and tried to open a new one.";
+	break;
+#endif
+    default:
+        msg = "dup2()";
+	break;
+    }
+fprintf( stderr, "error: %s\n", msg );
+}
+
 /*
 void error_(int error)
 {
