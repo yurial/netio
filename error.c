@@ -52,6 +52,59 @@ switch ( error )
 fprintf( stderr, "error: %s\n", msg );
 }
 
+void error_bind(int error)
+{
+char* msg = NULL;
+switch ( error )
+    {
+#ifndef USEMINIMAL
+    case EACCES:
+        msg = "The address is protected, and the user is not the superuser.\nSearch permission is denied on a component of the path prefix. (See also path_resolution(7).)";
+	break;
+    case EADDRINUSE:
+        msg = "The given address is already in use.";
+	break;
+    case EBADF:
+        msg = "sockfd is not a valid descriptor.";
+	break;
+    case EINVAL:
+        msg = "The socket is already bound to an address.\nThe addrlen is wrong, or the socket was not in the AF_UNIX family.";
+	break;
+    case ENOTSOCK:
+        msg = "sockfd is a descriptor for a file, not a socket.";
+	break;
+    case EADDRNOTAVAIL:
+        msg = "A nonexistent interface was requested or the requested address was not local.";
+	break;
+    case EFAULT:
+        msg = "Addr points outside the user's accessible address space.";
+	break;
+    case ELOOP:
+        msg = "Too many symbolic links were encountered in resolving addr.";
+	break;
+    case ENAMETOOLONG:
+        msg = "Addr is too long.";
+        break;
+    case ENOENT:
+        msg = "The file does not exist.";
+	break;
+    case ENOMEM:
+        msg = "Insufficient kernel memory was available.";
+	break;
+    case ENOTDIR:
+        msg = "A component of the path prefix is not a directory.";
+	break;
+    case EROFS:
+        msg = "The socket inode would reside on a read-only file system.";
+	break;
+#endif
+    default:
+        msg = "bind()";
+	break;
+    }
+fprintf( stderr, "error: %s\n", msg );
+}
+
 void error_accept(int error)
 {
 char* msg = NULL;
@@ -112,7 +165,8 @@ switch ( error )
 fprintf( stderr, "error: %s\n", msg );
 }
 
-/*void error_(int error)
+/*
+void error_(int error)
 {
 char* msg = NULL;
 switch ( error )

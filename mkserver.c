@@ -70,7 +70,7 @@ else if ( net_params[proto].m_domain == AF_INET6 )
 int ret = bind( server_sock, server_addr, server_addr_size );
 if ( ret != 0 )
     {
-    fprintf( stderr, "bind() error\n" );
+    error_bind( errno );
     exit( EXIT_FAILURE );
     }
 
