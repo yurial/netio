@@ -165,6 +165,32 @@ switch ( error )
 fprintf( stderr, "error: %s\n", msg );
 }
 
+void error_listen(int error)
+{
+char* msg = NULL;
+switch ( error )
+    {
+#ifndef USEMINIMAL
+    case EADDRINUSE:
+        msg = "Another socket is already listening on the same port.";
+	break;
+    case EBADF:
+        msg = "The argument sockfd is not a valid descriptor.";
+	break;
+    case ENOTSOCK:
+        msg = "The argument sockfd is not a socket.";
+	break;
+    case EOPNOTSUPP:
+        msg = "The socket is not of a type that supports the listen() operation.";
+	break;
+#endif
+    default:
+        msg = "listen()";
+	break;
+    }
+fprintf( stderr, "error: %s\n", msg );
+}
+
 /*
 void error_(int error)
 {

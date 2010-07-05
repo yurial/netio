@@ -79,7 +79,7 @@ if ( net_params[proto].m_type == SOCK_STREAM )
     ret = listen( server_sock, p_connqueue );
     if ( ret != 0 )
         {
-        fprintf( stderr, "listen() error\n" );
+        error_listen( errno );
         exit( EXIT_FAILURE );
         }
     }
