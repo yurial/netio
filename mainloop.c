@@ -158,7 +158,7 @@ for (index = 0; nready > 0 && index < s_fd.m_count; ++index)
 	int client_sock = accept( s_fd.m_array[index], NULL, NULL );
 	if ( client_sock == -1 )
 	    {
-	    fprintf( stderr, "accept() error\n" );
+	    error_accept( errno );
 	    exit( EXIT_FAILURE );
 	    }
 	onconnect( client_sock );
