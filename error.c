@@ -220,6 +220,29 @@ switch ( error )
 fprintf( stderr, "error: %s\n", msg );
 }
 
+void error_close(int error)
+{
+char* msg = NULL;
+switch ( error )
+    {
+#ifndef USEMINIMAL
+    case EBADF:
+        msg = "fd isn't a valid open file descriptor.";
+	break;
+    case EINTR:
+        msg = "The close() call was interrupted by a signal; see signal(7).";
+	break;
+    case EIO:
+        msg = "An I/O error occurred.";
+	break;
+#endif
+    default:
+        msg = "close()";
+	break;
+    }
+fprintf( stderr, "error: %s\n", msg );
+}
+
 /*
 void error_(int error)
 {

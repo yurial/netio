@@ -9,5 +9,6 @@ void error_listen(int error);
 void error_accept(int error);
 void error_malloc(int error);
 void error_dup2(int error);
+void error_close(int error);
 
 #endif

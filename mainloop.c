@@ -29,8 +29,13 @@ if ( p_ioevery )
     int ret = run( p_iocmd, &in, &out );
     if  ( ret == EXIT_FAILURE )
         {
-        close( client_sock );
-        return;
+        ret = close( client_sock );
+        if ( ret != 0 )
+	    {
+	    error_close( errno );
+	    assert( ret == 0 );
+	    }
+	return;
         }
     }
 else
@@ -40,7 +45,12 @@ else
 	int ret = run( p_incmd, &in, NULL );
 	if  ( ret == EXIT_FAILURE )
 	    {
-	    close( client_sock );
+	    ret = close( client_sock );
+            if ( ret != 0 )
+	        {
+	        error_close( errno );
+		assert( ret == 0 );
+	        }
 	    return;
 	    }
 	}
@@ -49,7 +59,12 @@ else
 	int ret = run( p_outcmd, NULL, &out );
 	if  ( ret == EXIT_FAILURE )
 	    {
-	    close( client_sock );
+	    ret = close( client_sock );
+            if ( ret != 0 )
+	        {
+	        error_close( errno );
+		assert( ret == 0 );
+	        }
 	    return;
 	    }
 	}
@@ -63,9 +78,23 @@ add( &c_ttl, -1 );
 
 void disconnect(int index)
 {
-close( c_fd.m_array[index] );
+int ret;
+ret = close( c_fd.m_array[index] );
+if ( ret != 0 )
+    {
+    error_close( errno );
+    assert( ret == 0 );
+    }
+
 if ( p_outevery || p_ioevery )
-    close( o_fd.m_array[index] );
+    {
+    ret = close( o_fd.m_array[index] );
+    if ( ret != 0 )
+        {
+        error_close( errno );
+	assert( ret == 0 );
+        }
+    }
 del( &c_fd, index );
 del( &c_ttl, index );
 del( &i_fd, index );
@@ -203,7 +232,12 @@ for (index = 0; nready > 0 && index < i_fd.m_count; ++index)
 		break;
 		}
 	    ptimeout = (p_wait == -1)? NULL : &timeout;
-	    close( i_fd.m_array[index] );
+	    ret = close( i_fd.m_array[index] );
+            if ( ret != 0 )
+	        {
+	        error_close( errno );
+		assert( ret == 0 );
+	        }
 	    index = (p_inevery || p_ioevery)? index-1 : -1;
             do
 	        {
