@@ -319,6 +319,68 @@ switch ( error )
 fprintf( stderr, "error: %s\n", msg );
 }
 
+void error_send(int error)
+{
+char* msg = NULL;
+switch ( error )
+    {
+#ifndef USEMINIMAL
+    case EACCES:
+        msg = "(For  Unix  domain  sockets, which are identified by pathname) Write permission is denied on the destination socket file, or search permission is denied for one of the directories the path prefix.  (See path_resolution(7).)";
+	break;
+    case EAGAIN:
+        msg = "The socket is marked non-blocking and the requested operation would block. POSIX.1-2001 allows either error to be returned for this case, and does not require these constants to have the same value, so a portable application should check for both possibilities.";
+	break;
+    case EBADF:
+        msg = "An invalid descriptor was specified.";
+	break;
+    case ECONNRESET:
+        msg = "Connection reset by peer.";
+	break;
+    case EDESTADDRREQ:
+        msg = "The socket is not connection-mode, and no peer address is set.";
+	break;
+    case EFAULT:
+        msg = "An invalid user space address was specified for an argument.";
+	break;
+    case EINTR:
+        msg = "A signal occurred before any data was transmitted; see signal(7).";
+	break;
+    case EINVAL:
+        msg = "Invalid argument passed.";
+        break;
+    case EISCONN:
+        msg = "The connection-mode socket was connected already but a recipient was specified.  (Now either this error is returned, or the recipient specification is ignored.)";
+	break;
+    case EMSGSIZE:
+        msg = "The socket type requires that message be sent atomically, and the size of the message to be sent made this impossible.";
+	break;
+    case ENOBUFS:
+        msg = "The output queue for a network interface was full. This generally indicates that the interface has stopped sending, but may be caused by transient congestion. (Normally, this does not occur in Linux.  Packets are just silently dropped when a device queue overflows.)";
+	break;
+    case ENOMEM:
+        msg = "No memory available.";
+	break;
+    case ENOTCONN:
+        msg = "The socket is not connected, and no target has been given.";
+	break;
+    case ENOTSOCK:
+        msg = "The argument sockfd is not a socket.";
+	break;
+    case EOPNOTSUPP:
+        msg = "Some bit in the flags argument is inappropriate for the socket type.";
+	break;
+    case EPIPE:
+        msg = "The local end has been shut down on a connection oriented socket.  In this case the process will also receive a SIGPIPE unless MSG_NOSIGNAL is set.";
+	break;
+#endif
+    default:
+        msg = "send()";
+	break;
+    }
+fprintf( stderr, "error: %s\n", msg );
+}
+
 /*
 void error_(int error)
 {

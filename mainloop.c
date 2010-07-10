@@ -266,7 +266,12 @@ for (index = 0; nready > 0 && index < i_fd.m_count; ++index)
 	    {
 	    ++index;
 	    sendcount = send( c_fd.m_array[index], buff, readcount, 0 );
-            if ( sendcount == -1 || sendcount == 0 )
+            if ( sendcount == -1 )
+	        {
+		error_send( errno );
+		disconnect( index );
+		}
+	    if ( sendcount == 0 )
                 {
 	        disconnect( index );
 	        }
