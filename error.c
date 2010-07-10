@@ -191,6 +191,62 @@ switch ( error )
 fprintf( stderr, "error: %s\n", msg );
 }
 
+void error_connect(int error)
+{
+char* msg = NULL;
+switch ( error )
+    {
+#ifndef USEMINIMAL
+    case EACCES:
+        msg = "For Unix domain sockets, which are identified by pathname: Write permission is denied on the socket file, or search permission is denied for one of the directories in the path prefix. (See also path_resolution(7).)\nThe user tried to connect to a broadcast address without having the socket broadcast flag enabled or the connection request failed because of a local firewall rule.";
+	break;
+    case EADDRINUSE:
+        msg = "Local address is already in use.";
+	break;
+    case EAFNOSUPPORT:
+        msg = "The passed address didn't have the correct address family in its sa_family field.";
+	break;
+    case EAGAIN:
+        msg = "No more free local ports or insufficient entries in the routing cache. For AF_INET see the description of /proc/sys/net/ipv4/ip_local_port_range ip(7) for information on how to increase the number of local ports.";
+	break;
+    case EALREADY:
+        msg = "The socket is non-blocking and a previous connection attempt has not yet been completed.";
+	break;
+    case EBADF:
+        msg = "The file descriptor is not a valid index in the descriptor table.";
+	break;
+    case ECONNREFUSED:
+        msg = "No-one listening on the remote address.";
+	break;
+    case EFAULT:
+        msg = "The socket structure address is outside the user's address space.";
+	break;
+    case EINPROGRESS:
+        msg = "The socket is non-blocking and the connection cannot be completed immediately. It is possible to select(2) or poll(2) for completion by selecting the socket for writing. After select(2) indicates writability, use getsockopt(2) to read the SO_ERROR option at level SOL_SOCKET to determine whether connect() completed successfully (SO_ERROR is zero) or unsuccessfully (SO_ERROR is one of the usual error codes listed here, explaining the reason for the failure).";
+	break;
+    case EINTR:
+        msg = "The system call was interrupted by a signal that was caught; see signal(7).";
+	break;
+    case EISCONN:
+        msg = "The socket is already connected.";
+	break;
+    case ENETUNREACH:
+        msg = "Network is unreachable.";
+	break;
+    case ENOTSOCK:
+        msg = "The file descriptor is not associated with a socket.";
+	break;
+    case ETIMEDOUT:
+        msg = "Timeout while attempting connection. The server may be too busy to accept new connections. Note that for IP sockets the timeout may be very long when syncookies are enabled on the server";
+	break;
+#endif
+    default:
+        msg = "connect()";
+	break;
+    }
+fprintf( stderr, "error: %s\n", msg );
+}
+
 void error_dup2(int error)
 {
 char* msg = NULL;
