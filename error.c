@@ -437,6 +437,26 @@ switch ( error )
 fprintf( stderr, "error: %s\n", msg );
 }
 
+void error_fork(int error)
+{
+char* msg = NULL;
+switch ( error )
+    {
+#ifndef USEMINIMAL
+    case EAGAIN:
+        msg = "fork() cannot allocate sufficient memory to copy the parent's page tables and allocate a task structure for the child.\nIt was not possible to create a new process because the caller's RLIMIT_NPROC resource limit was encountered. To exceed this limit, the process must have either the CAP_SYS_ADMIN or the CAP_SYS_RESOURCE capability.";
+	break;
+    case ENOMEM:
+        msg = "fork() failed to allocate the necessary kernel structures because memory is tight.";
+	break;
+#endif
+    default:
+        msg = "fork()";
+	break;
+    }
+fprintf( stderr, "error: %s\n", msg );
+}
+
 /*
 void error_(int error)
 {

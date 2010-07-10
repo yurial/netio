@@ -28,7 +28,10 @@ if ( out )
 
 pid_t pid = fork();
 if ( pid == -1 )
+    {
+    error_fork( errno );
     return EXIT_FAILURE;
+    }
 
 if ( pid == 0 )
     {
