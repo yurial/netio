@@ -16,5 +16,6 @@ void error_dup2(int error);
 void error_close(int error);
 void error_fork(int error);
 void error_exec(int error);
+void error_fsync(int error);
 
 #endif

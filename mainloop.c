@@ -219,7 +219,13 @@ for (index = 0; nready > 0 && index < c_fd.m_count; ++index)
 	assert( ret != 0 );
 	/*sync*/
 	if ( p_sync )
-	  fsync( o_fd.m_array[index] );
+	    {
+	    ret = fsync( o_fd.m_array[index] );
+	    if ( ret == -1 )
+		{
+		error_fsync( errno );
+		}
+	    }
 	}
     }
 if ( bbreak > 0 )

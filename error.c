@@ -522,6 +522,29 @@ switch ( error )
 fprintf( stderr, "error: %s\n", msg );
 }
 
+void error_fsync(int error)
+{
+char* msg = NULL;
+switch ( error )
+    {
+#ifndef USEMINIMAL
+    case EBADF:
+        msg = "fd is not a valid file descriptor open for writing.";
+	break;
+    case EIO:
+        msg = "An error occurred during synchronization.";
+	break;
+    case EINVAL:
+        msg = "fd is bound to a special file which does not support synchronization.";
+	break;
+#endif
+    default:
+        msg = "fsync()";
+	break;
+    }
+fprintf( stderr, "error: %s\n", msg );
+}
+
 /*
 void error_(int error)
 {
