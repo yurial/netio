@@ -224,7 +224,12 @@ for (index = 0; nready > 0 && index < i_fd.m_count; ++index)
     if ( i_fd.m_array[index] >= 0 && FD_ISSET( i_fd.m_array[index], &set ) )
         {
         int readcount = read( i_fd.m_array[index], buff, p_buffsize  );
-        if ( readcount == 0 || readcount == -1 )
+        if ( readcount == -1 )
+	    {
+	    error_read( errno );
+	    assert( readcount != -1 );
+	    }
+	if ( readcount == 0 )
 	    {
 	    if ( p_wait == 0 )
 	        {

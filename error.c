@@ -243,6 +243,41 @@ switch ( error )
 fprintf( stderr, "error: %s\n", msg );
 }
 
+void error_read(int error)
+{
+char* msg = NULL;
+switch ( error )
+    {
+#ifndef USEMINIMAL
+    case EAGAIN:
+        msg = "The file descriptor fd refers to a file other than a socket and has been marked non-blocking (O_NONBLOCK), and the read would block.\nThe file descriptor fd refers to a socket and has been marked non-blocking (O_NONBLOCK), and the read would block.  POSIX.1-2001 allows either error to be returned for this case, and does not require these constants to have the same value, so a portable application should check for both possibilities.";
+	break;
+    case EBADF:
+        msg = "fd is not a valid file descriptor or is not open for reading.";
+	break;
+    case EFAULT:
+        msg = "buf is outside your accessible address space.";
+	break;
+    case EINTR:
+        msg = "The call was interrupted by a signal before any data was read; see signal(7).";
+	break;
+    case EINVAL:
+        msg = "fd  is  attached to an object which is unsuitable for reading; or the file was opened with the O_DIRECT flag, and either the address specified in buf, the value specified in count, or the current file offset is not suitably aligned.\nfd was created via a call to timerfd_create(2) and the wrong size buffer was given to read(); see timerfd_create(2) for further information.";
+	break;
+    case EIO:
+        msg = "I/O error.  This will happen for example when the process is in a background process group, tries to read from its controlling tty, and either it is ignoring or blocking SIGTTIN or its process group is orphaned.  It may also occur when there is a low-level I/O error while reading from a disk or tape.";
+	break;
+    case EISDIR:
+        msg = "fd refers to a directory.";
+	break;
+#endif
+    default:
+        msg = "read()";
+	break;
+    }
+fprintf( stderr, "error: %s\n", msg );
+}
+
 /*
 void error_(int error)
 {
