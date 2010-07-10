@@ -202,7 +202,13 @@ for (index = 0; nready > 0 && index < c_fd.m_count; ++index)
         {
 	bbreak = 1;
 	int recvcount = recv( c_fd.m_array[index], buff, p_buffsize, 0 );
-        if ( recvcount == -1 || recvcount == 0 )
+        if ( recvcount == -1 )
+	    {
+	    error_recv( errno );
+	    disconnect( index );
+	    break;
+	    }
+	if ( recvcount == 0 )
 	    {
 	    disconnect( index );
 	    break;

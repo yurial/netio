@@ -278,6 +278,47 @@ switch ( error )
 fprintf( stderr, "error: %s\n", msg );
 }
 
+void error_recv(int error)
+{
+char* msg = NULL;
+switch ( error )
+    {
+#ifndef USEMINIMAL
+    case EAGAIN:
+        msg = "The socket is marked non-blocking and the receive operation would block, or a receive timeout had been set and the timeout expired before data was received. POSIX.1-2001 allows either error to be returned for this case, and does not require these constants to have the same value, so a portable application should check for both possibilities.";
+	break;
+    case EBADF:
+        msg = "The argument sockfd is an invalid descriptor.";
+        break;
+    case ECONNREFUSED:
+        msg = "A remote host refused to allow the network connection (typically because it is not running the requested service).";
+	break;
+    case EFAULT:
+        msg = "The receive buffer pointer(s) point outside the process's address space.";
+	break;
+    case EINTR:
+        msg = "The receive was interrupted by delivery of a signal before any data were available; see signal(7).";
+	break;
+    case EINVAL:
+        msg = "Invalid argument passed.";
+	break;
+    case ENOMEM:
+        msg = "Could not allocate memory for recvmsg().";
+	break;
+    case ENOTCONN:
+        msg = "The socket is associated with a connection-oriented protocol and has not been connected (see connect(2) and accept(2)).";
+	break;
+    case ENOTSOCK:
+        msg = "The argument sockfd does not refer to a socket.";
+	break;
+#endif
+    default:
+        msg = "recv()";
+	break;
+    }
+fprintf( stderr, "error: %s\n", msg );
+}
+
 /*
 void error_(int error)
 {
