@@ -457,6 +457,71 @@ switch ( error )
 fprintf( stderr, "error: %s\n", msg );
 }
 
+void error_exec(int error)
+{
+char* msg = NULL;
+switch ( error )
+    {
+#ifndef USEMINIMAL
+    case E2BIG:
+        msg = "The total number of bytes in the environment (envp) and argument list (argv) is too large.";
+	break;
+    case EACCES:
+        msg = "Search permission is denied on a component of the path prefix of filename or the name of a script interpreter.  (See also path_resolution(7).)\nThe file or a script interpreter is not a regular file.\nExecute permission is denied for the file or a script or ELF interpreter.\nThe file system is mounted noexec.";
+	break;
+    case EFAULT:
+        msg = "filename points outside your accessible address space.";
+	break;
+    case EINVAL:
+        msg = "An ELF executable had more than one PT_INTERP segment (i.e., tried to name more than one interpreter).";
+	break;
+    case EIO:
+        msg = "An I/O error occurred.";
+	break;
+    case EISDIR:
+        msg = "An ELF interpreter was a directory.";
+	break;
+    case ELIBBAD:
+        msg = "An ELF interpreter was not in a recognized format.";
+	break;
+    case ELOOP:
+        msg = "Too many symbolic links were encountered in resolving filename or the name of a script or ELF interpreter.";
+	break;
+    case EMFILE:
+        msg = "The process has the maximum number of files open.";
+	break;
+    case ENAMETOOLONG:
+        msg = "filename is too long.";
+	break;
+    case ENFILE:
+        msg = "The system limit on the total number of open files has been reached.";
+	break;
+    case ENOENT:
+        msg = "The file filename or a script or ELF interpreter does not exist, or a shared library needed for file or interpreter cannot be found.";
+	break;
+    case ENOEXEC:
+        msg = "An executable is not in a recognized format, is for the wrong architecture, or has some other format error that means it cannot be executed.";
+	break;
+    case ENOMEM:
+        msg = "Insufficient kernel memory was available.";
+	break;
+    case ENOTDIR:
+        msg = "A component of the path prefix of filename or a script or ELF interpreter is not a directory.";
+	break;
+    case EPERM:
+        msg = "The file system is mounted nosuid, the user is not the superuser, and the file has the set-user-ID or set-group-ID bit set.\nThe process is being traced, the user is not the superuser and the file has the set-user-ID or set-group-ID bit set.";
+	break;
+    case ETXTBSY:
+        msg = "Executable was open for writing by one or more processes.";
+	break;
+#endif
+    default:
+        msg = "exec()";
+	break;
+    }
+fprintf( stderr, "error: %s\n", msg );
+}
+
 /*
 void error_(int error)
 {

@@ -65,7 +65,11 @@ if ( pid == 0 )
 	    return EXIT_FAILURE;
             }
 	}
-    execl( p_cmd, "sh", "-c", command, (char*)NULL );
+    ret = execl( p_cmd, "sh", "-c", command, (char*)NULL );
+    if ( ret == -1 )
+        {
+        error_exec( errno );
+	}
     }
 else
     {
