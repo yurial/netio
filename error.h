@@ -11,6 +11,7 @@ void error_connect(int error);
 void error_recv(int error);
 void error_send(int error);
 void error_read(int error);
+void error_write(int error);
 void error_malloc(int error);
 void error_dup2(int error);
 void error_close(int error);

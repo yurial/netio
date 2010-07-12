@@ -334,6 +334,47 @@ switch ( error )
 fprintf( stderr, "error: %s\n", msg );
 }
 
+void error_write(int error)
+{
+char* msg = NULL;
+switch ( error )
+    {
+#ifndef USEMINIMAL
+    case EAGAIN:
+        msg = "The file descriptor fd refers to a file other than a socket and has been marked non-blocking (O_NONBLOCK), and the write would block.\nThe file descriptor fd refers to a socket and has been marked non-blocking (O_NONBLOCK), and the write would block. POSIX.1-2001 allows either error to be returned for this case, and does not require these constants to have the same value, so a portable application should check for both possibilities.";
+	break;
+    case EBADF:
+        msg = "fd is not a valid file descriptor or is not open for writing.";
+	break;
+    case EFAULT:
+        msg = "buf is outside your accessible address space.";
+	break;
+    case EFBIG:
+        msg = "An attempt was made to write a file that exceeds the implementation-defined maximum file size or the process's file size limit, or to write at a position past the maximum allowed offset.";
+	break;
+    case EINTR:
+        msg = "The call was interrupted by a signal before any data was written; see signal(7).";
+	break;
+    case EINVAL:
+        msg = "fd is attached to an object which is unsuitable for writing; or the file was opened with the O_DIRECT flag, and either the address specified in buf, the value specified in count, or the current file offset is not suitably aligned.";
+	break;
+    case EIO:
+        msg = "A low-level I/O error occurred while modifying the inode.";
+	break;
+    case ENOSPC:
+        msg = "The device containing the file referred to by fd has no room for the data.";
+	break;
+    case EPIPE:
+        msg = "fd is connected to a pipe or socket whose reading end is closed. When this happens the writing process will also receive a SIGPIPE signal. (Thus, the write return value is seen only if the program catches, blocks or ignores this signal.)";
+	break;
+#endif
+    default:
+        msg = "write()";
+	break;
+    }
+fprintf( stderr, "error: %s\n", msg );
+}
+
 void error_recv(int error)
 {
 char* msg = NULL;

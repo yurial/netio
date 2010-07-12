@@ -214,9 +214,12 @@ for (index = 0; nready > 0 && index < c_fd.m_count; ++index)
 	    break;
 	    }
         ret = write( o_fd.m_array[index], buff, recvcount );
-	//TODO:
-	assert( ret != -1 );
-	assert( ret != 0 );
+	if ( ret == -1 )
+	    {
+	    error_write( errno );
+	    assert( ret != -1 );
+	    }
+	assert( ret == recvcount );
 	/*sync*/
 	if ( p_sync )
 	    {
