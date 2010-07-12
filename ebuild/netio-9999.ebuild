@@ -30,8 +30,11 @@ IUSE="debug unixsock minimal +ipv4 ipv6 +tcp udp sctp"
 DEPEND=""
 S=${WORKDIR}/netio
 
-src_compile() {
+src_configure() {
 	econf $(use_enable debug) $(use_enable minimal) $(use_enable unixsock) $(use_enable ipv4) $(use_enable ipv6) $(use_enable tcp) $(use_enable udp) $(use_enable sctp)
+}
+
+src_compile() {
 	make
 }
 
