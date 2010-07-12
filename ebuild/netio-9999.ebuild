@@ -26,12 +26,12 @@ fi
 
 LICENSE="GPL-3"
 SLOT="0"
-IUSE="debug unixsock +ipv4 ipv6 +tcp udp sctp"
+IUSE="debug unixsock minimal +ipv4 ipv6 +tcp udp sctp"
 DEPEND=""
 S=${WORKDIR}/netio
 
 src_compile() {
-	econf $(use_enable debug) $(use_enable unixsock) $(use_enable ipv4) $(use_enable ipv6) $(use_enable tcp) $(use_enable udp) $(use_enable sctp)
+	econf $(use_enable debug) $(use_enable minimal) $(use_enable unixsock) $(use_enable ipv4) $(use_enable ipv6) $(use_enable tcp) $(use_enable udp) $(use_enable sctp)
 	make
 }
 
