@@ -3,6 +3,7 @@
 if [ "_$1" == "_--help" ]; then
     echo "Optional Features:"
     echo "  --enable-debug"
+    echo "  --enable-minimal"
     echo "  --enable-unixsock"
     echo "  --enable-ipv4"
     echo "  --enable-ipv6"
@@ -20,7 +21,12 @@ while true ; do
                     echo -n " -g -DDEBUG" >>makefile
                     shift
                     ;;
-                --enable-unixsock)
+                --enable-minimal)
+		    echo "Enable minimal build"
+		    echo -n " -DUSEMINIMAL" >>makefile
+		    shift
+		    ;;
+		--enable-unixsock)
                     echo "Enable unixsock support"
                     echo -n " -DUSEUNIXSOCK" >>makefile
                     shift

@@ -68,6 +68,6 @@ run.o: makefile run.c run.h
 collision.o: makefile collision.c collision.h
 	gcc $(OPT) -c collision.c -o collision.o
 
-error.o: error.c error.h
+error.o: makefile error.c error.h
 	gcc $(OPT) -c error.c -o error.o
 
