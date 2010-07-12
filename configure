@@ -1,40 +1,52 @@
 #!/bin/sh
 
+if [ "_$1" == "_--help" ]; then
+    echo "Optional Features:"
+    echo "  --enable-debug"
+    echo "  --enable-unixsock"
+    echo "  --enable-ipv4"
+    echo "  --enable-ipv6"
+    echo "  --enable-tcp"
+    echo "  --enable-udp"
+    echo "  --enable-sctp"
+    exit
+fi
+
 echo -n "OPT=" >makefile
 while true ; do
         case "$1" in
                 --with-debug|--enable-debug)
-                    echo "With debug info"
+                    echo "Enable debug info"
                     echo -n " -g -DDEBUG" >>makefile
                     shift
                     ;;
                 --with-unixsock|--enable-unixsock)
-                    echo "With unixsock support"
+                    echo "Enable unixsock support"
                     echo -n " -DUSEUNIXSOCK" >>makefile
                     shift
                     ;;
                 --with-ipv4|--enable-ipv4)
-                    echo "With ipv4 support"
+                    echo "Enable ipv4 support"
                     echo -n " -DUSEIP4" >>makefile
                     shift
                     ;;
                 --with-ipv6|--enable-ipv6)
-                    echo "With ipv6 support"
+                    echo "Enable ipv6 support"
                     echo -n " -DUSEIP6" >>makefile
                     shift
                     ;;
                 --with-tcp|--enable-tcp)
-                    echo "With tcp support"
+                    echo "Enable tcp support"
                     echo -n " -DUSETCP" >>makefile
                     shift
                     ;;
                 --with-udp|--enable-udp)
-                    echo "With udp support"
+                    echo "Enable udp support"
                     echo -n " -DUSEUDP" >>makefile
                     shift
                     ;;
                 --with-sctp|--enable-sctp)
-                    echo "With sctp support"
+                    echo "Enable sctp support"
                     echo -n " -DUSESCTP" >>makefile
                     shift
                     ;;
