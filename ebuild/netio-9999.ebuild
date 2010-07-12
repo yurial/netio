@@ -1,11 +1,11 @@
 EAPI=2
 
-DESCRIPTION="tool for redirect stdin, stdout or program to network connection"
-HOMEPAGE="http://www.yurial.ru/netio"
-
 which git &>/dev/null
 if [ $? == 0 ]; then
     inherit git
+
+DESCRIPTION="tool for redirect stdin, stdout or program to network connection"
+HOMEPAGE="http://www.yurial.ru/netio"
 
     src_unpack() {
         git_src_unpack
