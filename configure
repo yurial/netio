@@ -10,7 +10,7 @@ while true ; do
                     ;;
                 --with-unixsock|--enable-unixsock)
                     echo "With unixsock support"
-                    echo -n " -DUSEUNIX" >>makefile
+                    echo -n " -DUSEUNIXSOCK" >>makefile
                     shift
                     ;;
                 --with-ipv4|--enable-ipv4)

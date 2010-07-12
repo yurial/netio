@@ -6,7 +6,7 @@
 #include "cp.h"
 
 const struct net_param net_params[] = {
-#ifdef USEUNIX  
+#ifdef USEUNIXSOCK
 	{ STR_UNIX,  sizeof(STR_UNIX) -1, STR_NAME_UNIX, AF_UNIX,  SOCK_STREAM, IPPROTO_IP   }, 
 #endif
 #ifdef USETCP4  
@@ -60,7 +60,7 @@ for (hostend = target; *hostend && *hostend != endchar; ++hostend)
 
 
 if ( !*hostend )
-#ifdef USEUNIX
+#ifdef USEUNIXSOCK
 	if ( net_params[index].m_str == STR_UNIX )
         {
 	*host = malloc( sizeof(struct hostent) );

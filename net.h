@@ -45,11 +45,11 @@
 #ifdef USESCTP
 	static const char STR_NAME_SCTP[]  = "stcp";
 #endif
-#ifdef USEUNIX
+#ifdef USEUNIXSOCK
 	static const char STR_NAME_UNIX[]  = "unix";
 #endif
 
-#ifdef USEUNIX
+#ifdef USEUNIXSOCK
 	static const char STR_UNIX[]  = "unix:";    
 #endif
 #ifdef USETCP4  
