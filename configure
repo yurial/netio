@@ -15,37 +15,37 @@ fi
 echo -n "OPT=" >makefile
 while true ; do
         case "$1" in
-                --with-debug|--enable-debug)
+                --enable-debug)
                     echo "Enable debug info"
                     echo -n " -g -DDEBUG" >>makefile
                     shift
                     ;;
-                --with-unixsock|--enable-unixsock)
+                --enable-unixsock)
                     echo "Enable unixsock support"
                     echo -n " -DUSEUNIXSOCK" >>makefile
                     shift
                     ;;
-                --with-ipv4|--enable-ipv4)
+                --enable-ipv4)
                     echo "Enable ipv4 support"
                     echo -n " -DUSEIP4" >>makefile
                     shift
                     ;;
-                --with-ipv6|--enable-ipv6)
+                --enable-ipv6)
                     echo "Enable ipv6 support"
                     echo -n " -DUSEIP6" >>makefile
                     shift
                     ;;
-                --with-tcp|--enable-tcp)
+                --enable-tcp)
                     echo "Enable tcp support"
                     echo -n " -DUSETCP" >>makefile
                     shift
                     ;;
-                --with-udp|--enable-udp)
+                --enable-udp)
                     echo "Enable udp support"
                     echo -n " -DUSEUDP" >>makefile
                     shift
                     ;;
-                --with-sctp|--enable-sctp)
+                --enable-sctp)
                     echo "Enable sctp support"
                     echo -n " -DUSESCTP" >>makefile
                     shift

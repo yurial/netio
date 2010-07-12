@@ -31,7 +31,7 @@ DEPEND=""
 S=${WORKDIR}/netio
 
 src_compile() {
-	econf $(use_with debug) $(use_enable unixsock) $(use_enable ipv4) $(use_enable ipv6) $(use_enable tcp) $(use_enable udp) $(use_enable sctp)
+	econf $(use_enable debug) $(use_enable unixsock) $(use_enable ipv4) $(use_enable ipv6) $(use_enable tcp) $(use_enable udp) $(use_enable sctp)
 	make
 }
 
