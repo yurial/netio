@@ -15,6 +15,7 @@
 
 int mkserver(char* target, int* pproto)
 {
+int ret;
 int server_addr_size = 0;
 struct sockaddr*    server_addr;
 struct sockaddr_un  server_addr_un;
@@ -67,7 +68,7 @@ else if ( net_params[proto].m_domain == AF_INET6 )
     server_addr_size = sizeof(server_addr_in6);
     }
 
-int ret = bind( server_sock, server_addr, server_addr_size );
+ret = bind( server_sock, server_addr, server_addr_size );
 if ( ret != 0 )
     {
     error_bind( errno );
