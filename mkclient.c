@@ -15,6 +15,7 @@
 
 int mkclient(char* target, int* pproto)
 {
+int ret;
 int client_addr_size = 0;
 struct sockaddr*    client_addr;
 struct sockaddr_un  client_addr_un;
@@ -39,6 +40,17 @@ if ( client_sock == -1 )
     {
     error_socket( errno );
     exit( EXIT_FAILURE );
+    }
+
+if ( net_params[proto].m_type == SOCK_DGRAM )
+    {
+    unsigned long value = (unsigned long)-1;
+    ret = setsockopt( client_sock, SOL_SOCKET, SO_BROADCAST, &value, sizeof(value) );
+    if ( ret != 0 )
+        {
+        fprintf( stderr, "setsockopt error!\n" );
+	exit( EXIT_FAILURE );
+	}
     }
 
 if ( net_params[proto].m_domain == AF_UNIX )
@@ -67,7 +79,7 @@ else if ( net_params[proto].m_domain == AF_INET6 )
     client_addr_size = sizeof(client_addr_in6);
     }
 
-int ret = connect( client_sock, client_addr, client_addr_size );
+ret = connect( client_sock, client_addr, client_addr_size );
 if ( ret != 0 )
     {
     error_connect( errno );
