@@ -92,7 +92,7 @@ if ( p_server )
         if ( net_params[proto].m_type == SOCK_STREAM )
             add( &s_fd, server_sock );
 	else
-            add( &c_fd, server_sock );
+	    onconnect( server_sock );
         }
     }
 else
