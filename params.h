@@ -13,6 +13,7 @@ extern char*  p_outcmd;
 extern int    p_outevery;
 extern char*  p_iocmd;
 extern int    p_ioevery;
+extern int    p_signal;
 extern int    p_wait;
 extern int    p_sync;
 extern int    p_buffsize;

@@ -1,7 +1,7 @@
 SHELL=/bin/sh
 
-netio: makefile error.o netio.o help.o params.o mkserver.o mkclient.o net.o cp.o mainloop.o set.o run.o collision.o makefile
-	gcc error.o netio.o help.o params.o mkserver.o mkclient.o net.o cp.o mainloop.o set.o run.o collision.o -o netio
+netio: makefile error.o netio.o help.o params.o mkserver.o mkclient.o io.o servers.o clients.o net.o cp.o mainloop.o set.o run.o collision.o makefile
+	gcc error.o netio.o help.o params.o mkserver.o mkclient.o io.o servers.o clients.o net.o cp.o mainloop.o set.o run.o collision.o -lrt -o netio
 
 clean:
 	rm -f *.o netio
@@ -50,11 +50,20 @@ mkserver.o: makefile mkserver.c mkserver.h
 mkclient.o: makefile mkclient.c mkclient.h
 	gcc $(OPT) -c mkclient.c -o mkclient.o
 
+servers.o: makefile servers.c servers.h
+	gcc $(OPT) -c servers.c -o servers.o
+
+clients.o: makefile clients.c clients.h
+	gcc $(OPT) -c clients.c -o clients.o
+
 net.o: makefile net.c net.h
 	gcc $(OPT) -c net.c -o net.o
 
 cp.o: makefile cp.c cp.h
 	gcc $(OPT) -c cp.c -o cp.o
+
+io.o: makefile io.c io.h
+	gcc $(OPT) -c io.c -o io.o
 
 mainloop.o: makefile mainloop.c mainloop.h
 	gcc $(OPT) -c mainloop.c -o mainloop.o

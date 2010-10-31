@@ -1,12 +1,10 @@
 #ifndef NETIOH
 #define NETIOH
 
-extern struct TArray s_fd;
-extern struct TArray c_fd;
-extern struct TArray c_ttl;
-extern struct TArray i_fd;
-extern struct TArray o_fd;
+extern struct TServers g_servers;
+extern struct TClients g_clients;
 
 int main(int argc, char* argv[]);
+void sigquit(int signal);
 
 #endif

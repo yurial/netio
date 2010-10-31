@@ -3,6 +3,7 @@
 #include <string.h>
 #include <getopt.h>
 #include <assert.h>
+#include <signal.h>
 #include "params.h"
 #include "help.h"
 #include "cp.h"
@@ -21,9 +22,10 @@ char*   p_outcmd       = NULL;
 int     p_outevery     = 0;
 char*   p_iocmd        = NULL;
 int     p_ioevery      = 0;
+int     p_signal       = SIGTERM;
 int     p_wait         = 0;
 int     p_sync         = 0;
-int     p_buffsize     = 1024;
+int     p_buffsize     = 4096;
 
 const static char options[] = "hl1q:c:i:o:w:sb:";
 const static struct option long_options[] = {

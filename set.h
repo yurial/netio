@@ -1,18 +1,13 @@
 #ifndef SETH
 #define SETH
 
-void sigquit(int signal);
+#include <poll.h>
 
-struct TArray
-{
-int* m_array;
-int  m_count;
-};
+extern struct pollfd* g_set;
+extern int g_setcount;
 
-void add(struct TArray* array, int element);
-void del(struct TArray* array, int index);
-void mkfdset(fd_set* set);
-int  mknfds();
+inline void set_add(int pos, int fd, int events);
+inline void set_del(int pos);
 
 #endif
 

@@ -5,95 +5,36 @@
 #include "params.h"
 #include "error.h"
 
-int run(char* command, int* in, int* out)
+pid_t run(const char* command, const int newstdout, const int newstdin)
 {
-int pipe_in[2];
-int pipe_out[2];
-
 int ret;
-
-if ( in )
-    {
-    ret = pipe( pipe_in );
-    if ( ret != 0 )
-        return EXIT_FAILURE;
-    }
-
-if ( out )
-    {
-    ret = pipe( pipe_out );
-    if ( ret != 0 )
-        return EXIT_FAILURE;
-    }
 
 pid_t pid = fork();
 if ( pid == -1 )
     {
     error_fork( errno );
-    return EXIT_FAILURE;
+    return -1;
     }
 
 if ( pid == 0 )
     {
-    if ( in )
-        {
-        ret = close( pipe_in[0] );
-        if ( ret != 0 )
-	    {
-	    error_close( errno );
-	    assert( ret == 0 );
-	    }
-        ret = dup2( pipe_in[1], STDOUT_FILENO );
-	if ( ret == -1 )
-	    {
-	    error_dup2( errno );
-            return EXIT_FAILURE;
-	    }
-        }
-    if ( out )
-        {
-	ret = close( pipe_out[1] );
-        if ( ret != 0 )
-	    {
-	    error_close( errno );
-	    assert( ret == 0 );
-	    }
-        ret = dup2( pipe_out[0], STDIN_FILENO );
-	if ( ret == -1 )
-	    {
-	    error_dup2( errno );
-	    return EXIT_FAILURE;
-            }
-	}
-    ret = execl( p_cmd, "sh", "-c", command, (char*)NULL );
+    ret = dup2( newstdout, STDOUT_FILENO );
     if ( ret == -1 )
         {
-        error_exec( errno );
-	}
-    }
-else
-    {
-    if ( in )
-        {
-	ret = close( pipe_in[1] );
-        if ( ret != 0 )
-	    {
-	    error_close( errno );
-	    assert( ret == 0 );
-	    }
-	*in = pipe_in[0];
+        error_dup2( errno );
+        return -1;
         }
-    if ( out )
+    ret = dup2( newstdin, STDIN_FILENO );
+    if ( ret == -1 )
         {
-	ret = close( pipe_out[0] );
-        if ( ret != 0 )
-	    {
-	    error_close( errno );
-	    assert( ret == 0 );
-	    }
-	*out = pipe_out[1];
+        error_dup2( errno );
+        return -1;
         }
+    execl( p_cmd, p_cmd, "-c", command, (char*)NULL );
+    error_exec( errno );
+    exit( -1 );
     }
+
 return pid;
 }
 

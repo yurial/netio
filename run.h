@@ -1,7 +1,7 @@
 #ifndef RUNH
 #define RUNH
 
-int run(char* command, int* in, int* out);
+pid_t run(const char* command, const int newstdout, const int newstdin);
 
 #endif
 

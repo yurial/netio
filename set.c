@@ -1,75 +1,48 @@
 #include <stdlib.h>
-#include <string.h>
-#include <sys/select.h>
-
 #include "set.h"
-#include "netio.h"
 
-#define max(X,Y) (X>Y)?X:Y;
+#define MAX(X,Y) (X>Y)?X:Y
+#define MIN(X,Y) (X<Y)?X:Y
 
-void add(struct TArray* array, int element)
+struct pollfd* g_set;
+int g_setcount;
+
+inline void set_add(int pos, int fd, int events)
 {
-register int count = array->m_count;
-int* new = (int*)malloc( (count+1) * sizeof(int) );
-if ( count > 0 )
-    memcpy( new, array->m_array, count * sizeof(int) );
-new[count] = element;
-if ( count )
-    free( array->m_array );
-array->m_array = new;
-++(array->m_count);
-}
-
-void del(struct TArray* array, int index)
-{
-register count = array->m_count;
-
-if ( count == 1 )
+int newsetcount = g_setcount + 1;
+struct pollfd* newset = malloc( sizeof(struct pollfd) * newsetcount );
+int index;
+for (index = 0; index < pos; ++index)
     {
-    free( array->m_array );
-    array->m_array = NULL;
-    array->m_count = 0;
-    return;
+    newset[index] = g_set[index];
     }
 
-int* new = (int*)malloc( (count-1) * sizeof(int) );
-if ( index > 0 )
-    memcpy( new, array->m_array, index * sizeof(int) );
-if ( (count - index) > 0 )
-    memcpy( new + index, array->m_array + index + 1, (count - index) * sizeof(int) );
-if ( count )
-    free( array->m_array );
-array->m_array = new;
---(array->m_count);
+newset[index].fd = fd;
+newset[index].events = events;
+
+for (++index; index < newsetcount; ++index)
+    {
+    newset[index] = g_set[index-1];
+    }
+free( g_set );
+g_set = newset;
+g_setcount = newsetcount;
 }
 
-void mkfdset(fd_set* set)
+inline void set_del(int pos)
 {
-FD_ZERO( set );
-
+int newsetcount = g_setcount - 1;
+struct pollfd* newset = malloc( sizeof(struct pollfd) * newsetcount );
 int index;
-for (index = 0; index < s_fd.m_count; ++index)
-    if ( s_fd.m_array[index] >= 0 )
-        FD_SET( s_fd.m_array[index], set );
-for (index = 0; index < c_fd.m_count; ++index)
-    if ( c_fd.m_array[index] >= 0 )
-        FD_SET( c_fd.m_array[index], set );
-for (index = 0; index < i_fd.m_count; ++index)
-    if ( i_fd.m_array[index] >= 0 )
-        FD_SET( i_fd.m_array[index], set );
+for (index = 0; index < pos; ++index)
+    {
+    newset[index] = g_set[index];
+    }
+for (; index < newsetcount; ++index)
+    {
+    newset[index] = g_set[index+1];
+    }
+free( g_set );
+g_set = newset;
+g_setcount = newsetcount;
 }
-
-int mknfds()
-{
-int nfds = 0;
-int index;
-for (index = 0; index < s_fd.m_count; ++index)
-    nfds = max( nfds, s_fd.m_array[index] );
-for (index = 0; index < c_fd.m_count; ++index)
-    nfds = max( nfds, c_fd.m_array[index] );
-for (index = 0; index < i_fd.m_count; ++index)
-    nfds = max( nfds, i_fd.m_array[index] );
-++nfds;
-return nfds;
-}
-

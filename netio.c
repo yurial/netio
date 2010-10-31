@@ -12,14 +12,10 @@
 #include "params.h"
 #include "net.h"
 #include "set.h"
+#include "mainloop.h"
 
-void sigquit(int signal);
-
-struct TArray s_fd  = { NULL, 0 };
-struct TArray c_fd  = { NULL, 0 };
-struct TArray c_ttl = { NULL, 0 };
-struct TArray i_fd  = { NULL, 0 };
-struct TArray o_fd  = { NULL, 0 };
+int g_ipid;
+int g_opid;
 
 int main(int argc, char* argv[])
 {
@@ -33,22 +29,37 @@ signal( SIGINT,  sigquit );
 signal( SIGQUIT, sigquit );
 
 params( argc, argv );
+
+g_set = malloc( sizeof(struct pollfd) * 2 );
+g_set[0].fd = STDOUT_FILENO;
+g_set[0].events = 0;
+g_set[0].revents = 0;
+g_set[1].fd = STDIN_FILENO;
+g_set[1].events = (p_ioevery || p_inevery)? 0 : POLLIN;
+g_set[1].revents = 0;
+g_setcount = 2;
+
 if ( p_iocmd && !p_ioevery )
     {
-    int i_fd, o_fd;
-    int ret = run( p_iocmd, &i_fd, &o_fd );
-    if ( ret == EXIT_FAILURE )
+    int newstdout[2];
+    int newstdin[2];
+    //TODO:
+    pipe( newstdout );
+    pipe( newstdin );
+    g_ipid = run( p_iocmd, newstdout[1], newstdin[0] );
+    g_opid = g_ipid;
+    if ( g_ipid == EXIT_FAILURE )
         exit( EXIT_FAILURE );
-    ret = dup2( i_fd, STDIN_FILENO );
+    int ret = dup2( newstdout[0], STDIN_FILENO );
     if ( ret == -1 )
         {
-	error_dup2( errno );
-	exit( EXIT_FAILURE );
+        error_dup2( errno );
+        exit( EXIT_FAILURE );
         }
-    ret = dup2( o_fd, STDOUT_FILENO );
+    ret = dup2( newstdin[1], STDOUT_FILENO );
     if ( ret == -1 )
         {
-	error_dup2( errno );
+        error_dup2( errno );
         exit( EXIT_FAILURE );
         }
     }
@@ -56,31 +67,44 @@ else
     {
     if ( p_incmd && !p_inevery )
         {
-	int i_fd;
-	int ret = run( p_incmd, &i_fd, NULL );
-	if ( ret == EXIT_FAILURE )
-	    exit( EXIT_FAILURE );
-	ret = dup2( i_fd, STDIN_FILENO );
+        int newstdout[2];
+	//TODO:
+        pipe( newstdout );
+        g_ipid = run( p_incmd, newstdout[1], STDIN_FILENO );
+        if ( g_ipid == EXIT_FAILURE )
+            exit( EXIT_FAILURE );
+        int ret = dup2( newstdout[0], STDIN_FILENO );
         if ( ret == -1 )
             {
-	    error_dup2( errno );
+            error_dup2( errno );
             exit( EXIT_FAILURE );
             }
-	}
+        }
     if ( p_outcmd && !p_outevery )
         {
-	int o_fd;
-	int ret = run( p_outcmd, NULL, &o_fd );
-	if ( ret == EXIT_FAILURE )
-	    exit( EXIT_FAILURE );
-	ret = dup2( o_fd, STDOUT_FILENO );
+        int newstdin[2];
+	//TODO:
+        pipe( newstdin );
+        g_opid = run( p_outcmd, STDOUT_FILENO, newstdin[0] );
+        if ( g_opid == EXIT_FAILURE )
+            exit( EXIT_FAILURE );
+        int ret = dup2( newstdin[1], STDOUT_FILENO );
         if ( ret == -1 )
             {
-	    error_dup2( errno );
+            error_dup2( errno );
             exit( EXIT_FAILURE );
             }
-	}
+        }
     }
+
+int flags;
+fcntl( STDOUT_FILENO, F_GETFD, &flags );
+flags |= O_NONBLOCK;
+if ( p_sync )
+    {
+    flags |= O_SYNC;
+    }
+fcntl( STDOUT_FILENO, F_SETFD, flags );
 
 int index;
 int proto;
@@ -90,17 +114,17 @@ if ( p_server )
         {
         int server_sock = mkserver( p_targetv[index], &proto );
         if ( net_params[proto].m_type == SOCK_STREAM )
-            add( &s_fd, server_sock );
-	else
-	    onconnect( server_sock );
+            server_add( server_sock );
+        else
+            client_add( server_sock );
         }
     }
 else
     {
     for (index = 0; index < p_targetc; ++index) 
         {
-	int client_sock = mkclient( p_targetv[index], &proto );
-        onconnect( client_sock );
+        int client_sock = mkclient( p_targetv[index], &proto );
+        client_add( client_sock );
         }
     }
 mainloop();
@@ -110,6 +134,7 @@ return 0;
 
 void sigquit(int signal)
 {
+//TODO:
 exit( EXIT_SUCCESS );
 }
 
