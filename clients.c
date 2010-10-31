@@ -59,10 +59,12 @@ else
         }
     }
 
-//TODO:
+/*
+//TODO: parse error
 int flags = fcntl( sock, F_GETFL, &flags );
 flags |= O_NONBLOCK;
 fcntl( sock, F_SETFL, flags );
+*/
 
 int newcount = g_clients.m_count + 1;
 struct TClient* clients = malloc( sizeof(struct TClient) * newcount );
@@ -168,7 +170,7 @@ const int sock = client->m_sock;
 const char* sendbuff = client->m_sendbuff;
 const int remain = client->m_remain;
 
-int sendsize = send( sock, sendbuff, remain, 0/*MSG_NOSIGNAL*/ );
+int sendsize = send( sock, sendbuff, remain, MSG_DONTWAIT/*MSG_NOSIGNAL*/ );
 if ( sendsize == -1 )
     {
     /* if error */
@@ -248,7 +250,7 @@ while (clientindex < g_clients.m_count)
     struct pollfd* set = g_set + setindex;
     struct TClient* client = g_clients.m_client + clientindex;
 
-    int sendsize = send( client->m_sock, buff, buffsize, 0/*MSG_NOSIGNAL*/ );
+    int sendsize = send( client->m_sock, buff, buffsize, MSG_DONTWAIT/*MSG_NOSIGNAL*/ );
     if ( sendsize == -1 )
         {
         if ( errno == EWOULDBLOCK )
