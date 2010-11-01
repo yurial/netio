@@ -9,27 +9,30 @@
 #include "cp.h"
 #include "collision.h"
 
-char**  p_targetv      = NULL;
-int     p_targetc      = 0;
+char**      p_targetv      = NULL;
+int         p_targetc      = 0;
 
-int     p_server       = 0;
-int     p_once         = 0;
-int     p_connqueue    = 1;
-char*   p_cmd          = "/bin/sh";
-char*   p_incmd        = NULL;
-int     p_inevery      = 0;
-char*   p_outcmd       = NULL;
-int     p_outevery     = 0;
-char*   p_iocmd        = NULL;
-int     p_ioevery      = 0;
-int     p_signal       = SIGTERM;
-int     p_wait         = 0;
-int     p_sync         = 0;
-int     p_buffsize     = 4096;
+int         p_server       = 0;
+int         p_once         = 0;
+int         p_connqueue    = 1;
+char*       p_cmd          = "/bin/sh";
+char*       p_incmd        = NULL;
+enum iomode p_inmode       = IOMODE_NONE;
+char*       p_outcmd       = NULL;
+enum iomode p_outmode      = IOMODE_NONE;
+char*       p_iocmd        = NULL;
+enum iomode p_iomode       = IOMODE_NONE;
+int         p_chldterm     = SIGTERM; //TODO:
+int         p_wait         = 0;
+int         p_sync         = 0;
+int         p_recvbuff     = 4096;
+int         p_sendbuff     = 4096;
 
 const static char options[] = "hl1q:c:i:o:w:sb:";
 const static struct option long_options[] = {
 	{ "io",        1, 0,  0  },
+        { "rb",        1, 0,  0  },
+	{ "sb",        1, 0,  0  },
         { "help",      0, 0, 'h' },
         { "listen",    0, 0, 'l' },
         { "once",      0, 0, '1' },
@@ -39,22 +42,29 @@ const static struct option long_options[] = {
 	{ "out",       1, 0, 'o' },
 	{ "wait",      1, 0, 'w' },
         { "sync",      0, 0, 's' },
-        { "buff",      1, 0, 'b' },
         { 0,           0, 0,  0  }
     };
 
-char* getcmd(char* str, int* every)
+char* getcmd(char* str, enum iomode* mode)
 {
-assert( every );
-
-if ( !memcmp( str, "every:", 6 ) )
+if ( !memcmp( str, "null:", 5 ) )
     {
-    *every = 1;
+    *mode = IOMODE_NULL;
+    return NULL;
+    }
+else if ( !memcmp( str, "block:", 6) )
+    {
+    *mode = IOMODE_BLOCK;
+    return NULL;
+    }
+else if ( !memcmp( str, "every:", 6 ) )
+    {
+    *mode = IOMODE_EVERY;
     return str + 6;
     }
 else if ( !memcmp( str, "once:", 5 ) )
     {
-    *every = 0;
+    *mode = IOMODE_ONCE;
     return str + 5;
     }
 return NULL;
@@ -74,10 +84,28 @@ while( 1 )
         {
 	case 0:
             {
-	    if (option_index == 0 )
+	    if ( option_index == 0 )
 	        {
-		p_iocmd = cp( getcmd( optarg, &p_ioevery ) );
+		p_iocmd = cp( getcmd( optarg, &p_iomode ) );
 		}
+            else if ( option_index == 1 )
+                {
+	        char* pend;
+                p_recvbuff = strtol( optarg, &pend, 10 );
+                if ( *pend == 'k' || *pend == 'K' )
+	            p_recvbuff *= 1024;
+	        else if ( *pend == 'm' || *pend == 'M' )
+	            p_recvbuff *= 1024 * 1024;
+	        }
+            else if ( option_index == 2 )
+                {
+	        char* pend;
+                p_sendbuff = strtol( optarg, &pend, 10 );
+                if ( *pend == 'k' || *pend == 'K' )
+	            p_sendbuff *= 1024;
+	        else if ( *pend == 'm' || *pend == 'M' )
+	            p_sendbuff *= 1024 * 1024;
+	        }
 	    }
             break;
         case 'h':
@@ -108,12 +136,12 @@ while( 1 )
 	    break;
         case 'i':
             {
-            p_incmd = cp( getcmd( optarg, &p_inevery ) );
+            p_incmd = cp( getcmd( optarg, &p_inmode ) );
             }
             break;
         case 'o':
             {
-            p_outcmd = cp( getcmd( optarg, &p_outevery ) );
+            p_outcmd = cp( getcmd( optarg, &p_outmode ) );
             }
             break;
         case 'w':
@@ -138,16 +166,6 @@ while( 1 )
             {
             p_sync = 1;
             }
-            break;
-        case 'b':
-            {
-	    char* pend;
-            p_buffsize = strtol( optarg, &pend, 10 );
-            if ( *pend == 'k' || *pend == 'K' )
-	        p_buffsize *= 1024;
-	    else if ( *pend == 'm' || *pend == 'M' )
-	        p_buffsize *= 1024 * 1024;
-	    }
             break;
         default:
             {

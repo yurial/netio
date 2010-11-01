@@ -32,5 +32,8 @@ int client_POLLIN (int nready, struct pollfd* set, struct TClient* client, char*
 
 void client_sendall(char* buff, const size_t buffsize);
 
+void client_disconnect(struct TClient* client);
+void client_tdisconnect(struct TClient* client);
+
 #endif
 

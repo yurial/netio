@@ -30,41 +30,66 @@ void client_add(int sock)
 int events = POLLHUP;
 struct TClient client;
 client.m_sock = sock;
+client.m_ipid = -1;
+client.m_opid = -1;
 client.m_sendbuff = NULL;
 client.m_remain = 0;
 
-if ( p_ioevery )
+switch ( p_iomode )
     {
-    client.m_opid = run( p_iocmd, sock, sock );
-    client.m_ipid = client.m_opid;
+    case IOMODE_BLOCK:
+        shutdown( sock, SHUT_RDWR );
+        break;
+    case IOMODE_EVERY:
+        {
+        client.m_opid = run( p_iocmd, sock, sock );
+        client.m_ipid = client.m_opid;
+        }
+	break;
     }
-else
+if ( p_iomode == IOMODE_NONE )
     {
-    if ( p_inevery )
+    switch ( p_inmode )
         {
-        client.m_ipid = run( p_incmd, sock, STDIN_FILENO );
+        case IOMODE_BLOCK:
+            shutdown( sock, SHUT_WR );
+            break;
+        case IOMODE_EVERY:
+            {
+            client.m_ipid = run( p_incmd, sock, STDIN_FILENO );
+            if ( client.m_ipid == -1 )
+                {
+                close( sock );
+                return;
+                }
+            }
+            break;
         }
-    else
+    switch ( p_outmode )
         {
-        client.m_ipid = -1;
-        }
-    if ( p_outevery )
-        {
-        client.m_opid = run( p_outcmd, STDOUT_FILENO, sock );
-        }
-    else
-        {
-        client.m_opid = -1;
-        events |= POLLIN;
+        case IOMODE_BLOCK:
+            shutdown( sock, SHUT_RD );
+            break;
+        case IOMODE_EVERY:
+            {
+            client.m_opid = run( p_outcmd, STDOUT_FILENO, sock );
+            if ( client.m_opid == -1 )
+                {
+                close( sock );
+                return;
+                }
+            }
+            break;
         }
     }
 
-/*
-//TODO: parse error
-int flags = fcntl( sock, F_GETFL, &flags );
-flags |= O_NONBLOCK;
-fcntl( sock, F_SETFL, flags );
-*/
+if ( p_iomode == IOMODE_ONCE || p_outmode == IOMODE_ONCE )
+    {
+    if ( !(g_set[0].events & POLLOUT) )
+        {
+        events |= POLLIN;
+	}
+    }    
 
 int newcount = g_clients.m_count + 1;
 struct TClient* clients = malloc( sizeof(struct TClient) * newcount );
@@ -88,20 +113,6 @@ int index;
 for (index = 0; g_clients.m_client[index].m_sock != sock && index < g_clients.m_count; ++index)
     {
     clients[index] = g_clients.m_client[index];
-    }
-
-close( sock );
-if ( g_clients.m_client[index].m_remain != 0  )
-    {
-    --g_clients.m_blocked;
-    }
-if ( g_clients.m_client[index].m_ipid != -1 )
-    {
-    kill( g_clients.m_client[index].m_ipid, p_signal );
-    }
-if ( g_clients.m_client[index].m_opid != -1 )
-    {
-    kill( g_clients.m_client[index].m_opid, p_signal );
     }
 
 set_del( client2set( 0 ) + index );
@@ -137,7 +148,7 @@ while ( nready > 0 && clientindex < g_clients.m_count )
     if ( set->revents & POLLHUP )
         {
         --nready;
-        client_del( client->m_sock );
+        client_disconnect( client );
         continue;
         }
     /* can send to client */
@@ -175,7 +186,7 @@ if ( sendsize == -1 )
     {
     /* if error */
     error_send( errno );
-    client_del( client->m_sock );
+    client_disconnect( client );
     return nready;
     }
 if ( sendsize < remain )
@@ -200,16 +211,17 @@ inline int client_POLLIN(int nready, struct pollfd* set, struct TClient* client,
 set->revents ^= POLLIN;
 --nready;
 
-ssize_t recvsize = recv( set->fd, recvbuff, p_buffsize, MSG_PEEK );
+///TODO:
+ssize_t recvsize = recv( set->fd, recvbuff, p_recvbuff, MSG_PEEK );
 if ( recvsize == -1 )
     {
     error_recv( errno );
-    client_del( client->m_sock );
+    client_disconnect( client );
     return nready;
     }
 if ( recvsize == 0 )
     {
-    client_del( client->m_sock );
+    client_disconnect( client );
     return nready;
     }
 ssize_t writesize = write( STDOUT_FILENO, recvbuff, recvsize );
@@ -260,7 +272,7 @@ while (clientindex < g_clients.m_count)
         else
             {
             error_send( errno );
-            client_del( client->m_sock );
+            client_disconnect( client );
             continue;
             }
         }
@@ -274,5 +286,39 @@ while (clientindex < g_clients.m_count)
     ++clientindex;
     ++setindex;
     }
+}
+
+void client_disconnect(struct TClient* client)
+{
+close( client->m_sock );
+if ( client->m_remain != 0  )
+    {
+    --g_clients.m_blocked;
+    }
+if ( client->m_ipid != -1 )
+    {
+    kill( client->m_ipid, p_chldterm );
+    }
+if ( client->m_opid != -1 )
+    {
+    kill( client->m_opid, p_chldterm );
+    }
+
+client_del( client );
+}
+
+void client_tdisconnect(struct TClient* client)
+{
+if ( p_wait == -1 )
+    {
+    return;
+    }
+if ( p_wait == 0 )
+    {
+    client_disconnect( client );
+    return;
+    }
+clock_gettime( CLOCK_REALTIME, &client->m_closetime );
+//TODO: mk timer
 }
 

@@ -18,5 +18,8 @@ void error_close(int error);
 void error_fork(int error);
 void error_exec(int error);
 void error_fsync(int error);
+void error_poll(int error);
+void error_pipe(int error);
+void error_fcntl(int error);
 
 #endif

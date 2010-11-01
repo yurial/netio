@@ -13,9 +13,8 @@
 void mainloop()
 {
 /*p_buffsize*/
-//TODO: p_sendbuffsize p_recvbuffsize
-char* recvbuff = (char*)malloc( p_buffsize );
-char* sendbuff = (char*)malloc( p_buffsize );
+char* recvbuff = (char*)malloc( p_recvbuff );
+char* sendbuff = (char*)malloc( p_sendbuff );
 if ( recvbuff == NULL || sendbuff == NULL )
     {
     error_malloc( errno );
@@ -28,7 +27,9 @@ while ( (g_servers.m_count | g_clients.m_count) != 0 )
     int nready = poll( g_set, g_setcount, -1 );
     if ( nready == -1 )
         {
-        fprintf( stderr, "select() error\n" );
+        if ( errno == EINTR )
+            continue;
+        error_poll( errno );
         exit( EXIT_FAILURE );
         }
     if ( nready == 0 )

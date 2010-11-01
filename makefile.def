@@ -1,7 +1,7 @@
 SHELL=/bin/sh
 
-netio: makefile error.o netio.o help.o params.o mkserver.o mkclient.o io.o servers.o clients.o net.o cp.o mainloop.o set.o run.o collision.o makefile
-	gcc error.o netio.o help.o params.o mkserver.o mkclient.o io.o servers.o clients.o net.o cp.o mainloop.o set.o run.o collision.o -lrt -o netio
+netio: makefile error.o signals.o netio.o help.o params.o mkserver.o mkclient.o io.o servers.o clients.o net.o cp.o mainloop.o set.o run.o collision.o makefile
+	gcc error.o signals.o netio.o help.o params.o mkserver.o mkclient.o io.o servers.o clients.o net.o cp.o mainloop.o set.o run.o collision.o -lrt -o netio
 
 clean:
 	rm -f *.o netio
@@ -76,6 +76,9 @@ run.o: makefile run.c run.h
 
 collision.o: makefile collision.c collision.h
 	gcc $(OPT) -c collision.c -o collision.o
+
+signals.o: makefile signals.c signals.h
+	gcc $(OPT) -c signals.c -o signals.o
 
 error.o: makefile error.c error.h
 	gcc $(OPT) -c error.c -o error.o

@@ -3,11 +3,122 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <fcntl.h>
 
 #include "set.h"
+#include "error.h"
 #include "servers.h"
 #include "clients.h"
 #include "params.h"
+
+int g_ipid;
+int g_opid;
+
+void io_init()
+{
+int ret;
+g_set = malloc( sizeof(struct pollfd) * 2 );
+g_set[0].fd = STDOUT_FILENO;
+g_set[0].events = 0;
+g_set[0].revents = 0;
+g_set[1].fd = STDIN_FILENO;
+g_set[1].events = (p_iomode == IOMODE_ONCE || p_inmode == IOMODE_ONCE)? POLLIN : 0;
+g_set[1].revents = 0;
+g_setcount = 2;
+
+if ( p_iomode == IOMODE_ONCE )
+    {
+    int newstdout[2];
+    int newstdin[2];
+    ret = pipe( newstdout );
+    ret |= pipe( newstdin );
+    if ( ret != 0 )
+        {
+	error_pipe( errno );
+	exit( EXIT_FAILURE );
+	}
+    g_ipid = run( p_iocmd, newstdout[1], newstdin[0] );
+    g_opid = g_ipid;
+    if ( g_ipid == EXIT_FAILURE )
+        {
+	exit( EXIT_FAILURE );
+	}
+    int ret = dup2( newstdout[0], STDIN_FILENO );
+    if ( ret == -1 )
+        {
+        error_dup2( errno );
+        exit( EXIT_FAILURE );
+        }
+    ret = dup2( newstdin[1], STDOUT_FILENO );
+    if ( ret == -1 )
+        {
+        error_dup2( errno );
+        exit( EXIT_FAILURE );
+        }
+    }
+else
+    {
+    if ( p_inmode == IOMODE_ONCE )
+        {
+        int newstdout[2];
+        ret = pipe( newstdout );
+        if ( ret != 0 )
+            {
+	    error_pipe( errno );
+	    exit( EXIT_FAILURE );
+	    }
+        g_ipid = run( p_incmd, newstdout[1], STDIN_FILENO );
+        if ( g_ipid == EXIT_FAILURE )
+            {
+	    exit( EXIT_FAILURE );
+	    }
+        int ret = dup2( newstdout[0], STDIN_FILENO );
+        if ( ret == -1 )
+            {
+            error_dup2( errno );
+            exit( EXIT_FAILURE );
+            }
+        }
+    if ( p_outmode == IOMODE_ONCE )
+        {
+        int newstdin[2];
+        ret = pipe( newstdin );
+        if ( ret != 0 )
+            {
+            error_pipe( errno );
+            exit( EXIT_FAILURE );
+            }
+        g_opid = run( p_outcmd, STDOUT_FILENO, newstdin[0] );
+        if ( g_opid == EXIT_FAILURE )
+            exit( EXIT_FAILURE );
+        int ret = dup2( newstdin[1], STDOUT_FILENO );
+        if ( ret == -1 )
+            {
+            error_dup2( errno );
+            exit( EXIT_FAILURE );
+            }
+        }
+    }
+
+int flags;
+ret = fcntl( STDOUT_FILENO, F_GETFD, &flags );
+if ( ret == -1 )
+    {
+    error_fcntl( errno );
+    exit( EXIT_FAILURE );
+    }
+flags |= O_NONBLOCK;
+if ( p_sync )
+    {
+    flags |= O_SYNC;
+    }
+ret = fcntl( STDOUT_FILENO, F_SETFD, flags );
+if ( ret == -1 )
+    {
+    error_fcntl( errno );
+    exit( EXIT_FAILURE );
+    }
+}
 
 inline int output_loop(int nready)
 {
@@ -52,7 +163,7 @@ if ( set->revents & POLLIN )
     {
     set->revents ^= POLLIN;
     /* read from input */
-    int readcount = read( STDIN_FILENO, sendbuff, p_buffsize );
+    int readcount = read( STDIN_FILENO, sendbuff, p_sendbuff );
     if ( readcount == -1 )
         {
         error_read( errno );
@@ -60,23 +171,16 @@ if ( set->revents & POLLIN )
         }
     int index;
     if ( readcount == 0 )
-      {
-        if ( p_wait == 0 )
+        {
+	int index = 0;
+	while ( index < g_clients.m_count )
             {
-            int setindex = 0;
-            struct pollfd* set = g_set;
-            while ( setindex < g_setcount )
-                {
-                close( set->fd );
-                ++set;
-                ++setindex;
-                }
-            exit( EXIT_SUCCESS );
-            }
-        for (index = 0; index < g_clients.m_count; ++index)
-            {
-            clock_gettime( CLOCK_REALTIME, &g_clients.m_client[index].m_closetime );
-            //TODO: run timer
+	    struct TClient* client = g_clients.m_client + index;
+            client_tdisconnect( client );
+	    if ( client->m_closetime.tv_sec != 0 )
+	        {
+                ++index;
+		}
             }
         }
     else
