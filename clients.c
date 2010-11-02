@@ -83,7 +83,9 @@ if ( p_iomode == IOMODE_NONE )
         }
     }
 
-if ( p_iomode == IOMODE_ONCE || p_outmode == IOMODE_ONCE )
+int onone = p_iomode == IOMODE_NONE && p_outmode == IOMODE_NONE;
+int oonce = p_iomode == IOMODE_ONCE || p_outmode == IOMODE_ONCE;
+if ( onone || oonce )
     {
     if ( !(g_set[0].events & POLLOUT) )
         {
@@ -102,15 +104,22 @@ set_add( client2set( 0 ) + g_clients.m_count, sock, events );
 free( g_clients.m_client );
 g_clients.m_client = clients;
 g_clients.m_count = newcount;
+
+int inone = p_iomode == IOMODE_NONE || p_inmode == IOMODE_NONE;
+int ionce = p_iomode == IOMODE_ONCE || p_inmode == IOMODE_ONCE;
+if ( (g_clients.m_blocked == 0) && (inone || ionce) )
+    {
+    g_set[1].events |= POLLIN;
+    }
 }
 
-void client_del(int sock)
+void client_del(struct TClient* client)
 {
 int newcount = g_clients.m_count - 1;
 struct TClient* clients = malloc( sizeof(struct TClient) * newcount );
 
 int index;
-for (index = 0; g_clients.m_client[index].m_sock != sock && index < g_clients.m_count; ++index)
+for (index = 0; (g_clients.m_client+index) != client && index < g_clients.m_count; ++index)
     {
     clients[index] = g_clients.m_client[index];
     }
@@ -163,9 +172,11 @@ while ( nready > 0 && clientindex < g_clients.m_count )
         nready = client_POLLIN( nready, set, client, recvbuff );
         continue;
         }
-    assert( 0 );
+    assert( !set->revents ); //WTF?
     }
-if ( g_clients.m_blocked == 0 )
+int inone = p_iomode == IOMODE_NONE || p_inmode == IOMODE_NONE;
+int ionce = p_iomode == IOMODE_ONCE || p_inmode == IOMODE_ONCE;
+if ( (g_clients.m_blocked == 0) && (inone || ionce) )
     {
     g_set[1].events |= POLLIN;
     }
@@ -181,9 +192,10 @@ const int sock = client->m_sock;
 const char* sendbuff = client->m_sendbuff;
 const int remain = client->m_remain;
 
-int sendsize = send( sock, sendbuff, remain, MSG_DONTWAIT/*MSG_NOSIGNAL*/ );
+int sendsize = send( sock, sendbuff, remain, MSG_DONTWAIT | MSG_NOSIGNAL );
 if ( sendsize == -1 )
     {
+    assert( errno != EWOULDBLOCK ); //WTF?
     /* if error */
     error_send( errno );
     client_disconnect( client );
@@ -211,7 +223,18 @@ inline int client_POLLIN(int nready, struct pollfd* set, struct TClient* client,
 set->revents ^= POLLIN;
 --nready;
 
-///TODO:
+if ( p_iomode == IOMODE_NULL || p_outmode == IOMODE_NULL )
+    {
+    ssize_t truncsize = recv( client->m_sock, NULL, p_recvbuff, MSG_TRUNC );
+    if ( truncsize == -1 )
+        {
+	error_recv();
+	client_disconnect( client );
+	return nready;
+	}
+    return nready;
+    }
+
 ssize_t recvsize = recv( set->fd, recvbuff, p_recvbuff, MSG_PEEK );
 if ( recvsize == -1 )
     {
@@ -228,11 +251,16 @@ ssize_t writesize = write( STDOUT_FILENO, recvbuff, recvsize );
 if ( writesize == -1 )
     {
     error_write( errno );
-    //TODO:
-    assert( 0 );
+    abort(); // WTF?
     }
 ssize_t truncsize = recv( client->m_sock, NULL, writesize, MSG_TRUNC );
-assert( truncsize == writesize ); //TODO: WTF?
+if ( truncsize == -1 )
+    {
+    error_recv();
+    client_disconnect( client );
+    return nready;
+    }
+assert( truncsize == writesize ); //WTF?
 if ( writesize < recvsize )
     {
     g_set[0].events |= POLLOUT;
@@ -262,7 +290,7 @@ while (clientindex < g_clients.m_count)
     struct pollfd* set = g_set + setindex;
     struct TClient* client = g_clients.m_client + clientindex;
 
-    int sendsize = send( client->m_sock, buff, buffsize, MSG_DONTWAIT/*MSG_NOSIGNAL*/ );
+    int sendsize = send( client->m_sock, buff, buffsize, MSG_DONTWAIT | MSG_NOSIGNAL );
     if ( sendsize == -1 )
         {
         if ( errno == EWOULDBLOCK )

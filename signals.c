@@ -6,115 +6,78 @@
 
 #include "signals.h"
 #include "clients.h"
+#include "set.h"
 
 void action_normterm();
 void action_syncterm();
 void action_fastterm();
 void action_chld(pid_t pid);
-void action_debug1();
-void action_debug2();
+void action_reexec();
+void action_debug();
 
-void signal_HUP (int sig);
-void signal_INT (int sig);
-void signal_QUIT(int sig);
-void signal_ILL (int sig);
-void signal_ABRT(int sig);
-void signal_FPE (int sig);
-void signal_SEGV(int sig);
-void signal_PIPE(int sig);
+void signal_handler(int sig);
 void signal_ALRM(int sig);
-void signal_TERM(int sig);
-void signal_USR1(int sig);
-void signal_USR2(int sig);
 void signal_CHLD(int sig);
-void signal_CONT(int sig);
-void signal_STOP(int sig);
-void signal_TSTP(int sig);
-void signal_TTIN(int sig);
-void signal_TTOU(int sig);
-void signal_PWR (int sig);
 
 void signals_init()
 {
-signal( SIGHUP,  signal_HUP  );
-signal( SIGINT,  signal_INT  );
-signal( SIGQUIT, signal_QUIT );
-signal( SIGILL,  signal_ILL  );
-signal( SIGABRT, signal_ABRT );
-signal( SIGFPE,  signal_FPE  );
-signal( SIGSEGV, signal_SEGV );
-signal( SIGPIPE, signal_PIPE );
+signal( SIGHUP,  signal_handler );
+signal( SIGINT,  signal_handler );
+signal( SIGQUIT, signal_handler );
+signal( SIGILL,  signal_handler );
+signal( SIGFPE,  signal_handler );
+signal( SIGSEGV, signal_handler );
+signal( SIGTERM, signal_handler );
+signal( SIGUSR1, signal_handler );
+signal( SIGUSR2, signal_handler );
+signal( SIGPWR,  signal_handler );
 signal( SIGALRM, signal_ALRM );
-signal( SIGTERM, signal_TERM );
-signal( SIGUSR1, signal_USR1 );
-signal( SIGUSR2, signal_USR2 );
 signal( SIGCHLD, signal_CHLD );
-signal( SIGCONT, signal_CONT );
-signal( SIGTSTP, signal_TSTP );
-signal( SIGTTIN, signal_TTIN );
-signal( SIGTTOU, signal_TTOU );
-signal( SIGPWR,  signal_PWR  );
+//signal( SIGABRT, );
+//signal( SIGPIPE, );
+//signal( SIGCONT, );
+//signal( SIGTSTP, );
+//signal( SIGTTIN, );
+//signal( SIGTTOU, );
 }
 
-void signal_HUP(int sig)
+void signal_handler(int sig)
 {
-action_syncterm();
-}
-
-void signal_INT(int sig)
-{ 
-action_normterm();
-}
-
-void signal_QUIT(int sig)
-{
-action_syncterm();
-}
-
-void signal_ILL(int sig)
-{
-action_fastterm();
-}
-
-void signal_ABRT(int sig)
-{
-action_fastterm();
-}
-
-void signal_FPE(int sig)
-{
-action_fastterm();
-}
-
-void signal_SEGV(int sig)
-{
-action_fastterm();
-}
-
-void signal_PIPE(int sig)
-{
-fprintf( stderr, "%s\n", "SIGPIPE" );
-action_fastterm();
+switch ( sig )
+    {
+    case SIGHUP:
+        action_syncterm();
+	break;
+    case SIGINT:
+    case SIGTERM:
+        action_normterm();
+	break;
+    case SIGQUIT:
+        action_syncterm();
+	break;
+    case SIGILL:
+    case SIGABRT:
+    case SIGFPE:
+    case SIGSEGV:
+    case SIGPIPE:
+    case SIGPWR:
+        action_fastterm();
+	break;
+    case SIGUSR1:
+        action_reexec();
+	break;
+    case SIGUSR2:
+        action_debug();
+	break;
+    default:
+        fprintf( stderr, "unknowh signal %08X\n", sig );
+	break;
+    };
 }
 
 void signal_ALRM(int sig)
 {
 fprintf( stderr, "%s\n", "SIGALRM" );
-}
-
-void signal_TERM(int sig)
-{
-action_normterm();
-}
-
-void signal_USR1(int sig)
-{
-action_debug1();
-}
-
-void signal_USR2(int sig)
-{
-action_debug2();
 }
 
 void signal_CHLD(int sig)
@@ -141,33 +104,13 @@ else if ( WIFEXITED(status) )
 //WIFCONTINUED(status)
 }
 
-void signal_CONT(int sig)
-{
-fprintf( stderr, "%s\n", "SIGCONT" );
-}
-
-void signal_TSTP(int sig)
-{
-fprintf( stderr, "%s\n", "SIGTSTP" );
-}
-
-void signal_TTIN(int sig)
-{
-fprintf( stderr, "%s\n", "SIGTTIN" );
-}
-
-void signal_TTOU(int sig)
-{
-fprintf( stderr, "%s\n", "SIGTTOU" );
-}
-
-void signal_PWR(int sig)
-{
-action_fastterm();
-}
-
 void action_normterm()
 {
+int index;
+for (index = 0; index < g_setcount; ++index)
+    {
+    close( g_set[index].fd );
+    }
 exit( EXIT_SUCCESS );
 }
 
@@ -209,17 +152,15 @@ while ( index < g_clients.m_count )
     }
 }
 
-void action_debug1()
+void action_reexec()
 {
-#ifdef DEBUG
-//TODO:
-#endif
+//TODO: reexec
 }
 
-void action_debug2()
+void action_debug()
 {
 #ifdef DEBUG
-//TODO:
+//TODO: debug output
 #endif
 }
 

@@ -25,7 +25,6 @@ int             m_blocked;
 extern struct TClients g_clients;
 
 void client_add(int socket);
-void client_del(int socket);
 
 int client_POLLOUT(int nready, struct pollfd* set, struct TClient* client, char* recvbuff);
 int client_POLLIN (int nready, struct pollfd* set, struct TClient* client, char* recvbuff);

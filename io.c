@@ -22,7 +22,7 @@ g_set[0].fd = STDOUT_FILENO;
 g_set[0].events = 0;
 g_set[0].revents = 0;
 g_set[1].fd = STDIN_FILENO;
-g_set[1].events = (p_iomode == IOMODE_ONCE || p_inmode == IOMODE_ONCE)? POLLIN : 0;
+g_set[1].events = 0;
 g_set[1].revents = 0;
 g_setcount = 2;
 
@@ -107,10 +107,13 @@ if ( ret == -1 )
     error_fcntl( errno );
     exit( EXIT_FAILURE );
     }
-flags |= O_NONBLOCK;
 if ( p_sync )
     {
     flags |= O_SYNC;
+    }
+else
+    {
+    flags |= O_NONBLOCK;
     }
 ret = fcntl( STDOUT_FILENO, F_SETFD, flags );
 if ( ret == -1 )

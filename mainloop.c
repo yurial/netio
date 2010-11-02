@@ -10,6 +10,8 @@
 #include "mainloop.h"
 #include "params.h"
 
+#include <signal.h>
+
 void mainloop()
 {
 /*p_buffsize*/
@@ -22,13 +24,29 @@ if ( recvbuff == NULL || sendbuff == NULL )
     }
 /**/
 
+sigset_t normalsig;
+sigprocmask( SIG_SETMASK, NULL, &normalsig );
+sigset_t minimalsig;
+sigemptyset ( &minimalsig );
+sigaddset( &minimalsig, SIGILL );
+sigaddset( &minimalsig, SIGFPE );
+sigaddset( &minimalsig, SIGSEGV );
+sigaddset( &minimalsig, SIGBUS );
+sigaddset( &minimalsig, SIGPOLL );
+//sigaddset( &minimalsig, );
+
 while ( (g_servers.m_count | g_clients.m_count) != 0 )
     {
+    sigprocmask( SIG_SETMASK, &normalsig, NULL );
     int nready = poll( g_set, g_setcount, -1 );
+    sigprocmask( SIG_SETMASK, &minimalsig, NULL );
     if ( nready == -1 )
         {
         if ( errno == EINTR )
-            continue;
+            {
+	    fprintf( stderr, "eintr\n" );
+	    continue;
+	    }
         error_poll( errno );
         exit( EXIT_FAILURE );
         }
@@ -40,10 +58,10 @@ while ( (g_servers.m_count | g_clients.m_count) != 0 )
     nready = input_loop( sendbuff, nready );
     if ( nready == 0 )
         continue;
-    nready = clients_loop( recvbuff, nready );
+    nready = servers_loop( nready );
     if ( nready == 0 )
         continue;
-    nready = servers_loop( nready );
+    nready = clients_loop( recvbuff, nready );
     assert( nready == 0 );
     }
 
