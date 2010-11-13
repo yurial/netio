@@ -18,7 +18,6 @@ void action_syncterm();
 void action_fastterm();
 void action_chld(pid_t pid);
 void action_reexec();
-void action_debug();
 
 void signal_handler(int sig);
 void signal_ALRM(int sig);
@@ -76,7 +75,7 @@ switch ( sig )
         action_reexec();
 	break;
     case SIGUSR2:
-        action_debug();
+	debug_print();
 	break;
     default:
         fprintf( stderr, "unknowh signal %08X\n", sig );
@@ -199,13 +198,5 @@ void action_reexec()
 {
 //TODO: reexec
 fprintf( stderr, "reexec() %d\n", p_sync );
-}
-
-void action_debug()
-{
-#ifdef DEBUG
-//TODO: debug output
-fprintf( stderr, "debug() %d\n", p_sync );
-#endif
 }
 

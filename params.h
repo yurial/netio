@@ -1,6 +1,8 @@
 #ifndef PARAMSH
 #define PARAMSH
 
+#include <sys/time.h>
+
 enum iomode
 {
 IOMODE_NONE,
