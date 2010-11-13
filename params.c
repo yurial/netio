@@ -9,24 +9,24 @@
 #include "cp.h"
 #include "collision.h"
 
-char**      p_targetv      = NULL;
-int         p_targetc      = 0;
+char**          p_targetv      = NULL;
+int             p_targetc      = 0;
 
-int         p_server       = 0;
-int         p_once         = 0;
-int         p_connqueue    = 1;
-char*       p_cmd          = "/bin/sh";
-char*       p_incmd        = NULL;
-enum iomode p_inmode       = IOMODE_NONE;
-char*       p_outcmd       = NULL;
-enum iomode p_outmode      = IOMODE_NONE;
-char*       p_iocmd        = NULL;
-enum iomode p_iomode       = IOMODE_NONE;
-int         p_chldterm     = SIGTERM; //TODO:
-int         p_wait         = 0;
-int         p_sync         = 0;
-int         p_recvbuff     = 4096;
-int         p_sendbuff     = 4096;
+int             p_server       = 0;
+int             p_once         = 0;
+int             p_connqueue    = 1;
+char*           p_cmd          = "/bin/sh";
+char*           p_incmd        = NULL;
+enum iomode     p_inmode       = IOMODE_NONE;
+char*           p_outcmd       = NULL;
+enum iomode     p_outmode      = IOMODE_NONE;
+char*           p_iocmd        = NULL;
+enum iomode     p_iomode       = IOMODE_NONE;
+int             p_chldterm     = SIGTERM; //TODO:
+struct timeval  p_wait         = { 0 };
+int             p_sync         = 0;
+int             p_recvbuff     = 4096;
+int             p_sendbuff     = 4096;
 
 const static char options[] = "hl1q:c:i:o:w:sb:";
 const static struct option long_options[] = {
@@ -47,12 +47,12 @@ const static struct option long_options[] = {
 
 char* getcmd(char* str, enum iomode* mode)
 {
-if ( !memcmp( str, "null:", 5 ) )
+if ( !memcmp( str, "null", 4 ) )
     {
     *mode = IOMODE_NULL;
     return NULL;
     }
-else if ( !memcmp( str, "block:", 6) )
+else if ( !memcmp( str, "block", 5) )
     {
     *mode = IOMODE_BLOCK;
     return NULL;
@@ -147,19 +147,21 @@ while( 1 )
         case 'w':
             {
 	    char* pend;
-            p_wait = strtol( optarg, &pend, 10 );
+	    long msec = strtol( optarg, &pend, 10 );
             switch ( *pend )
 	        {
 		case 's':
-	            p_wait *= 1000;
+	            msec *= 1000;
 		    break;
 	        case 'm':
-	            p_wait *= 1000 * 60;
+	            msec *= 1000 * 60;
 		    break;
 		case 'h':
-		    p_wait *= 1000 * 60 * 60;
+		    msec *= 1000 * 60 * 60;
 		    break;
 	        }
+	    p_wait.tv_sec = msec / 1000;
+	    p_wait.tv_usec = msec % 1000;
             }
             break;
         case 's':

@@ -10,6 +10,9 @@
 #include "params.h"
 #include "set.h"
 
+#include <sys/time.h>
+#include <stdio.h>
+
 #define MAX(X,Y) (X>Y)?X:Y
 #define MIN(X,Y) (X<Y)?X:Y
 
@@ -110,6 +113,7 @@ int ionce = p_iomode == IOMODE_ONCE || p_inmode == IOMODE_ONCE;
 if ( (g_clients.m_blocked == 0) && (inone || ionce) )
     {
     g_set[1].events |= POLLIN;
+    signals_cansyncterm();
     }
 }
 
@@ -179,6 +183,7 @@ int ionce = p_iomode == IOMODE_ONCE || p_inmode == IOMODE_ONCE;
 if ( (g_clients.m_blocked == 0) && (inone || ionce) )
     {
     g_set[1].events |= POLLIN;
+    signals_cansyncterm();
     }
 return nready;
 }
@@ -251,7 +256,7 @@ ssize_t writesize = write( STDOUT_FILENO, recvbuff, recvsize );
 if ( writesize == -1 )
     {
     error_write( errno );
-    abort(); // WTF?
+    exit( EXIT_FAILURE); // WTF?
     }
 ssize_t truncsize = recv( client->m_sock, NULL, writesize, MSG_TRUNC );
 if ( truncsize == -1 )
@@ -337,16 +342,15 @@ client_del( client );
 
 void client_tdisconnect(struct TClient* client)
 {
-if ( p_wait == -1 )
+if ( p_wait.tv_usec == -1 )
     {
     return;
     }
-if ( p_wait == 0 )
+if ( timer_iszero( &p_wait ) )
     {
     client_disconnect( client );
     return;
     }
-clock_gettime( CLOCK_REALTIME, &client->m_closetime );
-//TODO: mk timer
+timer_init( client );
 }
 

@@ -23,7 +23,7 @@ extern enum iomode    p_outmode;
 extern char*          p_iocmd;
 extern enum iomode    p_iomode;
 extern int            p_chldterm;
-extern int            p_wait;
+extern struct timeval p_wait;
 extern int            p_sync;
 extern int            p_sendbuff;
 extern int            p_recvbuff;

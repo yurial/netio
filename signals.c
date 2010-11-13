@@ -6,7 +6,12 @@
 
 #include "signals.h"
 #include "clients.h"
+#include "timer.h"
+
 #include "set.h"
+#include "params.h"
+
+sigset_t sigset;
 
 void action_normterm();
 void action_syncterm();
@@ -21,6 +26,12 @@ void signal_CHLD(int sig);
 
 void signals_init()
 {
+sigemptyset( &sigset );
+sigaddset( &sigset, SIGINT );
+sigaddset( &sigset, SIGUSR1 );
+sigaddset( &sigset, SIGUSR2 );
+signals_cansyncterm();
+
 signal( SIGHUP,  signal_handler );
 signal( SIGINT,  signal_handler );
 signal( SIGQUIT, signal_handler );
@@ -45,13 +56,11 @@ void signal_handler(int sig)
 {
 switch ( sig )
     {
-    case SIGHUP:
-        action_syncterm();
-	break;
     case SIGINT:
-    case SIGTERM:
         action_normterm();
 	break;
+    case SIGHUP:
+    case SIGTERM:
     case SIGQUIT:
         action_syncterm();
 	break;
@@ -75,9 +84,33 @@ switch ( sig )
     };
 }
 
+void signals_block()
+{
+sigprocmask( SIG_BLOCK, &sigset, NULL );
+}
+
+void signals_unblock()
+{
+sigprocmask( SIG_UNBLOCK, &sigset, NULL );
+}
+
+void signals_cansyncterm()
+{
+sigaddset( &sigset, SIGHUP );
+sigaddset( &sigset, SIGTERM );
+sigaddset( &sigset, SIGQUIT );
+}
+
+void signals_cantsyncterm()
+{
+sigdelset( &sigset, SIGHUP );
+sigdelset( &sigset, SIGTERM );
+sigdelset( &sigset, SIGQUIT );
+}
+
 void signal_ALRM(int sig)
 {
-fprintf( stderr, "%s\n", "SIGALRM" );
+timer_alarm();
 }
 
 void signal_CHLD(int sig)
@@ -116,11 +149,21 @@ exit( EXIT_SUCCESS );
 
 void action_syncterm()
 {
+int index;
+for (index = 0; index < g_setcount; ++index)
+    {
+    close( g_set[index].fd );
+    }
 exit( EXIT_SUCCESS );
 }
 
 void action_fastterm()
 {
+int index;
+for (index = 0; index < g_setcount; ++index)
+    {
+    close( g_set[index].fd );
+    }
 exit( EXIT_FAILURE );
 }
 
@@ -155,12 +198,14 @@ while ( index < g_clients.m_count )
 void action_reexec()
 {
 //TODO: reexec
+fprintf( stderr, "reexec() %d\n", p_sync );
 }
 
 void action_debug()
 {
 #ifdef DEBUG
 //TODO: debug output
+fprintf( stderr, "debug() %d\n", p_sync );
 #endif
 }
 

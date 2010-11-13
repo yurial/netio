@@ -12,7 +12,7 @@ char*           m_sendbuff;
 size_t          m_remain;
 int             m_ipid;
 int             m_opid;
-struct timespec m_closetime;
+struct timeval  m_timer;
 };
 
 struct TClients

@@ -180,7 +180,7 @@ if ( set->revents & POLLIN )
             {
 	    struct TClient* client = g_clients.m_client + index;
             client_tdisconnect( client );
-	    if ( client->m_closetime.tv_sec != 0 )
+	    if ( client->m_timer.tv_sec != 0 || client->m_timer.tv_usec != 0 )
 	        {
                 ++index;
 		}
@@ -191,7 +191,8 @@ if ( set->revents & POLLIN )
         client_sendall( sendbuff, readcount );
         if ( g_clients.m_blocked > 0 )
             {
-            set->events ^= POLLIN;
+            set->events &= ~POLLIN;
+	    signals_cantsyncterm();
             }
         }
     }
