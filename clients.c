@@ -88,13 +88,18 @@ if ( p_iomode == IOMODE_NONE )
 
 int onone = p_iomode == IOMODE_NONE && p_outmode == IOMODE_NONE;
 int oonce = p_iomode == IOMODE_ONCE || p_outmode == IOMODE_ONCE;
+int onull = p_iomode == IOMODE_NULL || p_outmode == IOMODE_NULL;
 if ( onone || oonce )
     {
     if ( !(g_set[0].events & POLLOUT) )
         {
         events |= POLLIN;
-	}
+        }
     }    
+else if ( onull )
+    {
+    events |= POLLIN;
+    }
 
 int newcount = g_clients.m_count + 1;
 struct TClient* clients = malloc( sizeof(struct TClient) * newcount );
@@ -234,6 +239,11 @@ if ( p_iomode == IOMODE_NULL || p_outmode == IOMODE_NULL )
     if ( truncsize == -1 )
         {
         error_recv();
+        client_disconnect( client );
+        return nready;
+        }
+    if ( truncsize == 0 )
+        {
         client_disconnect( client );
         return nready;
         }
