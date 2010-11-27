@@ -6,6 +6,7 @@
 
 void debug_print()
 {
+//TODO: need more info
 int index;
 fprintf( stderr, "params:\n" );
 /*target*/

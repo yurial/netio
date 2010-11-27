@@ -233,10 +233,10 @@ if ( p_iomode == IOMODE_NULL || p_outmode == IOMODE_NULL )
     ssize_t truncsize = recv( client->m_sock, NULL, p_recvbuff, MSG_TRUNC );
     if ( truncsize == -1 )
         {
-	error_recv();
-	client_disconnect( client );
-	return nready;
-	}
+        error_recv();
+        client_disconnect( client );
+        return nready;
+        }
     return nready;
     }
 
@@ -295,7 +295,7 @@ while (clientindex < g_clients.m_count)
     struct pollfd* set = g_set + setindex;
     struct TClient* client = g_clients.m_client + clientindex;
 
-    int sendsize = send( client->m_sock, buff, buffsize, MSG_DONTWAIT | MSG_NOSIGNAL );
+    int sendsize = send( client->m_sock, buff, buffsize, MSG_DONTWAIT );
     if ( sendsize == -1 )
         {
         if ( errno == EWOULDBLOCK )
