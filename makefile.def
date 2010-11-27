@@ -86,3 +86,6 @@ timer.o: makefile timer.c timer.h
 error.o: makefile error.c error.h
 	gcc $(OPT) -c error.c -o error.o
 
+debug.o: makefile debug.c debug.h
+	gcc $(OPT) -c debug.c -o debug.o
+
