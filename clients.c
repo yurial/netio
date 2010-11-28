@@ -37,6 +37,8 @@ client.m_ipid = -1;
 client.m_opid = -1;
 client.m_sendbuff = NULL;
 client.m_remain = 0;
+client.m_timer.tv_sec = 0;
+client.m_timer.tv_usec = 0; 
 
 switch ( p_iomode )
     {
@@ -224,6 +226,10 @@ else
     client->m_remain = 0;
     set->events &= ~POLLOUT;
     --g_clients.m_blocked;
+    if ( g_set[1].fd == -1 ) //stdin closed
+        {
+        client_tdisconnect( client );
+        }
     }
 return nready;
 }
@@ -325,6 +331,10 @@ while (clientindex < g_clients.m_count)
         client->m_sendbuff = buff + sendsize;
         client->m_remain = buffsize - sendsize;
         set->events |= POLLOUT;
+        }
+    else if ( g_set[1].fd == -1 ) //stdin closed
+        {
+        client_tdisconnect( client );
         }
     ++clientindex;
     ++setindex;

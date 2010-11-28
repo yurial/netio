@@ -158,10 +158,17 @@ inline int input_loop(char* sendbuff, int nready)
 {
 struct pollfd* set = g_set + 1;
 
-if ( nready && !set->revents )
+if ( !(nready && set->revents) )
     return nready;
 
 --nready;
+if ( set->revents & POLLHUP )
+    {
+    set->revents ^= POLLHUP;
+    set->events = 0;
+    set->fd = -1;
+    }
+
 if ( set->revents & POLLIN )
     {
     set->revents ^= POLLIN;
@@ -171,35 +178,33 @@ if ( set->revents & POLLIN )
         {
         error_read( errno );
         assert( readcount != -1 );
+        return nready;
         }
-    int index;
     if ( readcount == 0 )
         {
+        set->fd = -1;
+        set->events = 0;
         int index = 0;
         while ( index < g_clients.m_count )
             {
             struct TClient* client = g_clients.m_client + index;
-            client_tdisconnect( client );
             if ( client->m_timer.tv_sec != 0 || client->m_timer.tv_usec != 0 )
                 {
                 ++index;
                 }
+            else
+                {
+                client_tdisconnect( client );
+                }
             }
+        return nready;
         }
-    else
+    client_sendall( sendbuff, readcount );
+    if ( g_clients.m_blocked > 0 )
         {
-        client_sendall( sendbuff, readcount );
-        if ( g_clients.m_blocked > 0 )
-            {
-            set->events &= ~POLLIN;
-            signals_cantsyncterm();
-            }
+        set->events &= ~POLLIN;
+        signals_cantsyncterm();
         }
     }
-else
-    {
-    assert( 0 );
-    }
-
 return nready;
 }
