@@ -33,8 +33,8 @@ while ( (g_servers.m_count | g_clients.m_count) != 0 )
         {
         if ( errno == EINTR )
             {
-	    continue;
-	    }
+            continue;
+            }
         error_poll( errno );
         exit( EXIT_FAILURE );
         }
@@ -56,3 +56,4 @@ while ( (g_servers.m_count | g_clients.m_count) != 0 )
 free( sendbuff );
 free( recvbuff );
 }
+

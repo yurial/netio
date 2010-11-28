@@ -53,29 +53,29 @@ while ( index < g_clients.m_count )
     {
     if ( timer_iszero( &client->m_timer ) || timer_isnegative( &client->m_timer ) )
         {
-	++client;
-	++index;
-	continue;
-	}
+        ++client;
+        ++index;
+        continue;
+        }
 
     if ( timer_iszero( &client->m_timer ) )
         {
         minimal = client->m_timer;
-	++client;
-	++index;
-	continue;
-	}
+        ++client;
+        ++index;
+        continue;
+        }
     if ( client->m_timer.tv_sec < minimal.tv_sec )
         {
-	minimal = client->m_timer;
-	}
+        minimal = client->m_timer;
+        }
     else if ( client->m_timer.tv_sec == minimal.tv_sec )
         {
-	if ( client->m_timer.tv_usec < minimal.tv_usec )
-	    {
-	    minimal = client->m_timer;
-	    }
-	}
+        if ( client->m_timer.tv_usec < minimal.tv_usec )
+            {
+            minimal = client->m_timer;
+            }
+        }
     ++client;
     ++index;
     }
@@ -117,12 +117,12 @@ while ( index < g_clients.m_count )
     if ( timer_isnegative( &client->m_timer ) )
         {
         client_disconnect( client );
-	}
+        }
     else
         {
-	++client;
+        ++client;
         ++index;
-	}
+        }
     }
 /**/
 struct timeval minimal = timer_getminimal();
@@ -132,8 +132,8 @@ while ( index < g_clients.m_count )
     {
     if ( (client->m_timer.tv_sec == minimal.tv_sec) && (client->m_timer.tv_usec == minimal.tv_usec) )
         {
-	timer_setnegative( &client->m_timer );
-	}
+        timer_setnegative( &client->m_timer );
+        }
     ++index;
     ++client;
     }

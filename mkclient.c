@@ -49,8 +49,8 @@ if ( net_params[proto].m_type == SOCK_DGRAM )
     if ( ret != 0 )
         {
         fprintf( stderr, "setsockopt error!\n" );
-	exit( EXIT_FAILURE );
-	}
+        exit( EXIT_FAILURE );
+        }
     }
 
 if ( net_params[proto].m_domain == AF_UNIX )

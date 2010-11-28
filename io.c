@@ -34,15 +34,15 @@ if ( p_iomode == IOMODE_ONCE )
     ret |= pipe( newstdin );
     if ( ret != 0 )
         {
-	error_pipe( errno );
-	exit( EXIT_FAILURE );
-	}
+        error_pipe( errno );
+        exit( EXIT_FAILURE );
+        }
     g_ipid = run( p_iocmd, newstdout[1], newstdin[0] );
     g_opid = g_ipid;
     if ( g_ipid == EXIT_FAILURE )
         {
-	exit( EXIT_FAILURE );
-	}
+        exit( EXIT_FAILURE );
+        }
     int ret = dup2( newstdout[0], STDIN_FILENO );
     if ( ret == -1 )
         {
@@ -64,14 +64,14 @@ else
         ret = pipe( newstdout );
         if ( ret != 0 )
             {
-	    error_pipe( errno );
-	    exit( EXIT_FAILURE );
-	    }
+            error_pipe( errno );
+            exit( EXIT_FAILURE );
+            }
         g_ipid = run( p_incmd, newstdout[1], STDIN_FILENO );
         if ( g_ipid == EXIT_FAILURE )
             {
-	    exit( EXIT_FAILURE );
-	    }
+            exit( EXIT_FAILURE );
+            }
         int ret = dup2( newstdout[0], STDIN_FILENO );
         if ( ret == -1 )
             {
@@ -175,15 +175,15 @@ if ( set->revents & POLLIN )
     int index;
     if ( readcount == 0 )
         {
-	int index = 0;
-	while ( index < g_clients.m_count )
+        int index = 0;
+        while ( index < g_clients.m_count )
             {
-	    struct TClient* client = g_clients.m_client + index;
+            struct TClient* client = g_clients.m_client + index;
             client_tdisconnect( client );
-	    if ( client->m_timer.tv_sec != 0 || client->m_timer.tv_usec != 0 )
-	        {
+            if ( client->m_timer.tv_sec != 0 || client->m_timer.tv_usec != 0 )
+                {
                 ++index;
-		}
+                }
             }
         }
     else
@@ -192,7 +192,7 @@ if ( set->revents & POLLIN )
         if ( g_clients.m_blocked > 0 )
             {
             set->events &= ~POLLIN;
-	    signals_cantsyncterm();
+            signals_cantsyncterm();
             }
         }
     }

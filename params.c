@@ -30,17 +30,17 @@ int             p_sendbuff     = 4096;
 
 const static char options[] = "hl1q:c:i:o:w:sb:";
 const static struct option long_options[] = {
-	{ "io",        1, 0,  0  },
+        { "io",        1, 0,  0  },
         { "rb",        1, 0,  0  },
-	{ "sb",        1, 0,  0  },
+        { "sb",        1, 0,  0  },
         { "help",      0, 0, 'h' },
         { "listen",    0, 0, 'l' },
         { "once",      0, 0, '1' },
-	{ "connqueue", 1, 0, 'q' },
-	{ "cmd",       1, 0, 'c' },
+        { "connqueue", 1, 0, 'q' },
+        { "cmd",       1, 0, 'c' },
         { "in",        1, 0, 'i' },
-	{ "out",       1, 0, 'o' },
-	{ "wait",      1, 0, 'w' },
+        { "out",       1, 0, 'o' },
+        { "wait",      1, 0, 'w' },
         { "sync",      0, 0, 's' },
         { 0,           0, 0,  0  }
     };
@@ -82,31 +82,31 @@ while( 1 )
         break;
     switch( option )
         {
-	case 0:
+        case 0:
             {
-	    if ( option_index == 0 )
-	        {
-		p_iocmd = cp( getcmd( optarg, &p_iomode ) );
-		}
+            if ( option_index == 0 )
+                {
+                p_iocmd = cp( getcmd( optarg, &p_iomode ) );
+                }
             else if ( option_index == 1 )
                 {
-	        char* pend;
+                char* pend;
                 p_recvbuff = strtol( optarg, &pend, 10 );
                 if ( *pend == 'k' || *pend == 'K' )
-	            p_recvbuff *= 1024;
-	        else if ( *pend == 'm' || *pend == 'M' )
-	            p_recvbuff *= 1024 * 1024;
-	        }
+                    p_recvbuff *= 1024;
+                else if ( *pend == 'm' || *pend == 'M' )
+                    p_recvbuff *= 1024 * 1024;
+                }
             else if ( option_index == 2 )
                 {
-	        char* pend;
+                char* pend;
                 p_sendbuff = strtol( optarg, &pend, 10 );
                 if ( *pend == 'k' || *pend == 'K' )
-	            p_sendbuff *= 1024;
-	        else if ( *pend == 'm' || *pend == 'M' )
-	            p_sendbuff *= 1024 * 1024;
-	        }
-	    }
+                    p_sendbuff *= 1024;
+                else if ( *pend == 'm' || *pend == 'M' )
+                    p_sendbuff *= 1024 * 1024;
+                }
+            }
             break;
         case 'h':
             {
@@ -124,16 +124,16 @@ while( 1 )
             p_once = 1;
             }
             break;
-	case 'q':
-	    {
-	    p_connqueue = atoi( optarg );
-	    }
-	    break;
-	case 'c':
-	    {
+        case 'q':
+            {
+            p_connqueue = atoi( optarg );
+            }
+            break;
+        case 'c':
+            {
             p_cmd = cp( optarg );
-	    }
-	    break;
+            }
+            break;
         case 'i':
             {
             p_incmd = cp( getcmd( optarg, &p_inmode ) );
@@ -146,22 +146,22 @@ while( 1 )
             break;
         case 'w':
             {
-	    char* pend;
-	    long msec = strtol( optarg, &pend, 10 );
+            char* pend;
+            long msec = strtol( optarg, &pend, 10 );
             switch ( *pend )
-	        {
-		case 's':
-	            msec *= 1000;
-		    break;
-	        case 'm':
-	            msec *= 1000 * 60;
-		    break;
-		case 'h':
-		    msec *= 1000 * 60 * 60;
-		    break;
-	        }
-	    p_wait.tv_sec = msec / 1000;
-	    p_wait.tv_usec = msec % 1000;
+                {
+                case 's':
+                    msec *= 1000;
+                    break;
+                case 'm':
+                    msec *= 1000 * 60;
+                    break;
+                case 'h':
+                    msec *= 1000 * 60 * 60;
+                    break;
+                }
+            p_wait.tv_sec = msec / 1000;
+            p_wait.tv_usec = msec % 1000;
             }
             break;
         case 's':

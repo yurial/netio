@@ -57,12 +57,12 @@ switch ( sig )
     {
     case SIGINT:
         action_normterm();
-	break;
+        break;
     case SIGHUP:
     case SIGTERM:
     case SIGQUIT:
         action_syncterm();
-	break;
+        break;
     case SIGILL:
     case SIGABRT:
     case SIGFPE:
@@ -70,16 +70,16 @@ switch ( sig )
     case SIGPIPE:
     case SIGPWR:
         action_fastterm();
-	break;
+        break;
     case SIGUSR1:
         action_reexec();
-	break;
+        break;
     case SIGUSR2:
-	debug_print();
-	break;
+        debug_print();
+        break;
     default:
         fprintf( stderr, "unknowh signal %08X\n", sig );
-	break;
+        break;
     };
 }
 
@@ -175,21 +175,21 @@ while ( index < g_clients.m_count )
     {
     if ( client->m_ipid == pid )
         {
-	client->m_ipid = -1;
-	shutdown( client->m_sock, SHUT_WR );
-	client_tdisconnect( client );
-	end = 1;
-	}
+        client->m_ipid = -1;
+        shutdown( client->m_sock, SHUT_WR );
+        client_tdisconnect( client );
+        end = 1;
+        }
     if ( client->m_opid == pid )
         {
-	client->m_opid = -1;
-	shutdown( client->m_sock, SHUT_RD );
-	end = 1;
-	}
+        client->m_opid = -1;
+        shutdown( client->m_sock, SHUT_RD );
+        end = 1;
+        }
     if ( end )
         {
-	return;
-	}
+        return;
+        }
     ++client;
     }
 }

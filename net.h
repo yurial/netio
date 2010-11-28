@@ -37,40 +37,40 @@
 #endif
 
 #ifdef USETCP
-	static const char STR_NAME_TCP[]   = "tcp";
+        static const char STR_NAME_TCP[]   = "tcp";
 #endif
 #ifdef USEUDP
-	static const char STR_NAME_UDP[]   = "udp";
+        static const char STR_NAME_UDP[]   = "udp";
 #endif
 #ifdef USESCTP
-	static const char STR_NAME_SCTP[]  = "stcp";
+        static const char STR_NAME_SCTP[]  = "stcp";
 #endif
 #ifdef USEUNIXSOCK
-	static const char STR_NAME_UNIX[]  = "unix";
+        static const char STR_NAME_UNIX[]  = "unix";
 #endif
 
 #ifdef USEUNIXSOCK
-	static const char STR_UNIX[]  = "unix:";    
+        static const char STR_UNIX[]  = "unix:";    
 #endif
 #ifdef USETCP4  
-	static const char STR_TCP4[]  = "tcp://";   
+        static const char STR_TCP4[]  = "tcp://";   
 #endif
 #ifdef USEUDP4  
-	static const char STR_UDP4[]  = "udp://";   
+        static const char STR_UDP4[]  = "udp://";   
 #endif
 #ifdef USESCTP4 
-	static const char STR_SCTP4[] = "sctp://";  
+        static const char STR_SCTP4[] = "sctp://";  
 #endif
 #ifdef USETCP6  
-	static const char STR_TCP6[]  = "tcp6://";  
+        static const char STR_TCP6[]  = "tcp6://";  
 #endif
 #ifdef USEUDP6  
-	static const char STR_UDP6[]  = "udp6://";  
+        static const char STR_UDP6[]  = "udp6://";  
 #endif
 #ifdef USESCTP6 
-	static const char STR_SCTP6[] = "sctp6://"; 
+        static const char STR_SCTP6[] = "sctp6://"; 
 #endif
-	//static const char STR_UNIX[] = "";
+        //static const char STR_UNIX[] = "";
 
 struct net_param
 {

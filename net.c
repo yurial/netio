@@ -7,25 +7,25 @@
 
 const struct net_param net_params[] = {
 #ifdef USEUNIXSOCK
-	{ STR_UNIX,  sizeof(STR_UNIX) -1, STR_NAME_UNIX, AF_UNIX,  SOCK_STREAM, IPPROTO_IP   }, 
+        { STR_UNIX,  sizeof(STR_UNIX) -1, STR_NAME_UNIX, AF_UNIX,  SOCK_STREAM, IPPROTO_IP   }, 
 #endif
 #ifdef USETCP4  
-	{ STR_TCP4,  sizeof(STR_TCP4) -1, STR_NAME_TCP, AF_INET,  SOCK_STREAM,  IPPROTO_TCP  }, 
+        { STR_TCP4,  sizeof(STR_TCP4) -1, STR_NAME_TCP, AF_INET,  SOCK_STREAM,  IPPROTO_TCP  }, 
 #endif
 #ifdef USEUDP4  
-	{ STR_UDP4,  sizeof(STR_UDP4) -1, STR_NAME_UDP, AF_INET,  SOCK_DGRAM,   IPPROTO_UDP  }, 
+        { STR_UDP4,  sizeof(STR_UDP4) -1, STR_NAME_UDP, AF_INET,  SOCK_DGRAM,   IPPROTO_UDP  }, 
 #endif
 #ifdef USESCTP4 
-	{ STR_SCTP4, sizeof(STR_SCTP4)-1, STR_NAME_SCTP, AF_INET,  SOCK_STREAM, IPPROTO_SCTP }, 
+        { STR_SCTP4, sizeof(STR_SCTP4)-1, STR_NAME_SCTP, AF_INET,  SOCK_STREAM, IPPROTO_SCTP }, 
 #endif
 #ifdef USETCP6  
-	{ STR_TCP6,  sizeof(STR_TCP6) -1, STR_NAME_TCP, AF_INET6, SOCK_STREAM,  IPPROTO_TCP  },
+        { STR_TCP6,  sizeof(STR_TCP6) -1, STR_NAME_TCP, AF_INET6, SOCK_STREAM,  IPPROTO_TCP  },
 #endif
 #ifdef USEUDP6  
-	{ STR_UDP6,  sizeof(STR_UDP6) -1, STR_NAME_UDP, AF_INET6, SOCK_DGRAM,   IPPROTO_UDP  }, 
+        { STR_UDP6,  sizeof(STR_UDP6) -1, STR_NAME_UDP, AF_INET6, SOCK_DGRAM,   IPPROTO_UDP  }, 
 #endif
 #ifdef USESCTP6 
-	{ STR_SCTP6, sizeof(STR_SCTP6)-1, STR_NAME_SCTP, AF_INET6, SOCK_STREAM, IPPROTO_SCTP }, 
+        { STR_SCTP6, sizeof(STR_SCTP6)-1, STR_NAME_SCTP, AF_INET6, SOCK_STREAM, IPPROTO_SCTP }, 
 #endif
         { NULL,      0,                   NULL,          -1,       -1,          -1 }
 };
@@ -38,10 +38,10 @@ while ( net_params[index].m_str )
     {
     if ( !memcmp( target, net_params[index].m_str, net_params[index].m_strlength ) )
          {
-	 proto = index;
-	 target += net_params[index].m_strlength;
-	 break;
-	 }
+         proto = index;
+         target += net_params[index].m_strlength;
+         break;
+         }
     ++index;
     }
 if ( proto == -1 )
@@ -61,27 +61,27 @@ for (hostend = target; *hostend && *hostend != endchar; ++hostend)
 
 if ( !*hostend )
 #ifdef USEUNIXSOCK
-	if ( net_params[index].m_str == STR_UNIX )
+        if ( net_params[index].m_str == STR_UNIX )
         {
-	*host = malloc( sizeof(struct hostent) );
-	if ( *host == NULL )
-	    {
+        *host = malloc( sizeof(struct hostent) );
+        if ( *host == NULL )
+            {
             error_malloc( errno );
-	    exit( EXIT_FAILURE );
-	    }
+            exit( EXIT_FAILURE );
+            }
 
-	memset( *host, 0, sizeof(struct hostent) );
+        memset( *host, 0, sizeof(struct hostent) );
         (*host)->h_length = strlen( target );
-	(*host)->h_addr_list = malloc( sizeof(char*) );
-	if ( (*host)->h_addr_list == NULL )
-	    {
+        (*host)->h_addr_list = malloc( sizeof(char*) );
+        if ( (*host)->h_addr_list == NULL )
+            {
             error_malloc( errno );
-	    exit( EXIT_FAILURE );
-	    }
+            exit( EXIT_FAILURE );
+            }
 
-	*((*host)->h_addr_list) = cp( target );
+        *((*host)->h_addr_list) = cp( target );
         return proto;
-	}
+        }
     else
 #endif
         {

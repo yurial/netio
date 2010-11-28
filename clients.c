@@ -48,7 +48,7 @@ switch ( p_iomode )
         client.m_opid = run( p_iocmd, sock, sock );
         client.m_ipid = client.m_opid;
         }
-	break;
+        break;
     }
 if ( p_iomode == IOMODE_NONE )
     {
