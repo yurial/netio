@@ -92,7 +92,6 @@ void timer_init(struct TClient* client)
 int ret;
 struct itimerval curr_value;
 ret = getitimer( ITIMER_REAL, &curr_value );
-fprintf( stderr, "timer_init:\n  curr_value.it_value: %lu.%02lu\n  curr_value.it_interval: %lu.%02lu\n", curr_value.it_value.tv_sec, curr_value.it_value.tv_usec, curr_value.it_interval.tv_sec, curr_value.it_interval.tv_usec );
 //TODO: ret
 if ( timer_iszero( &curr_value.it_value ) )
     {
@@ -101,14 +100,12 @@ if ( timer_iszero( &curr_value.it_value ) )
     ret = setitimer( ITIMER_REAL, &curr_value, NULL );
     //TODO: ret
     timer_setnegative( &client->m_timer );
-fprintf( stderr, "\n  new_value.it_value: %lu.%02lu\n  new_value.it_interval: %lu.%02lu\n", curr_value.it_value.tv_sec, curr_value.it_value.tv_usec, curr_value.it_interval.tv_sec, curr_value.it_interval.tv_usec );
     return;
     }
 else if ( timer_iszero( &curr_value.it_interval ) )
     {
     timer_sub( &curr_value.it_interval, &p_wait, &curr_value.it_value );
     ret = setitimer( ITIMER_REAL, &curr_value, NULL );
-fprintf( stderr, "\n  new_value.it_value: %lu.%02lu\n  new_value.it_interval: %lu.%02lu\n\n", curr_value.it_value.tv_sec, curr_value.it_value.tv_usec, curr_value.it_interval.tv_sec, curr_value.it_interval.tv_usec );
     //TODO: ret
     }
 timer_sub( &client->m_timer, &p_wait, &curr_value.it_value );
@@ -156,6 +153,5 @@ struct itimerval curr_value;
 ret = getitimer( ITIMER_REAL, &curr_value );
 curr_value.it_interval = timer_getminimal();
 ret = setitimer( ITIMER_REAL, &curr_value, NULL );
-fprintf( stderr, "timer_alarm:\n  new_value.it_value: %lu.%02lu\n  new_value.it_interval: %lu.%02lu\n\n", curr_value.it_value.tv_sec, curr_value.it_value.tv_usec, curr_value.it_interval.tv_sec, curr_value.it_interval.tv_usec );
 }
 
