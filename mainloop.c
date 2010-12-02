@@ -50,7 +50,7 @@ while ( (g_servers.m_count | g_clients.m_count) != 0 )
     if ( nready == 0 )
         continue;
     nready = servers_loop( nready );
-    assert( nready == 0 );
+    //assert( nready == 0 ); //client can disconnected by SIGNAL and epsent in g_set now
     }
 
 free( sendbuff );

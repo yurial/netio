@@ -21,26 +21,31 @@ else
 result->tv_sec = a->tv_sec - b->tv_sec - overflow;
 }
 
-void timer_setzero(struct timeval *value)
+void timer_setzero(struct timeval* value)
 {
 value->tv_sec = 0;
 value->tv_usec = 0;
 }
 
-void timer_setnegative(struct timeval *value)
+void timer_setnegative(struct timeval* value)
 {
 value->tv_sec = -1;
 value->tv_usec = -1;
 }
 
-int timer_iszero(const struct timeval *value)
+int timer_isequal(const struct timeval* lvalue, const struct timeval* rvalue)
+{
+return (lvalue->tv_sec == rvalue->tv_sec) && (lvalue->tv_usec == rvalue->tv_usec);
+}
+
+int timer_iszero(const struct timeval* value)
 {
 return (value->tv_sec == 0) && (value->tv_usec == 0);
 }
 
-int timer_isnegative(const struct timeval *value)
+int timer_isnegative(const struct timeval* value)
 {
-return (value->tv_sec == -1) && (value->tv_usec == -1);
+return (value->tv_sec < 0) || ((value->tv_sec == 0) && (value->tv_usec < 0));
 }
 
 struct timeval timer_getminimal()
@@ -58,7 +63,7 @@ while ( index < g_clients.m_count )
         continue;
         }
 
-    if ( timer_iszero( &client->m_timer ) )
+    if ( timer_iszero( &minimal ) )
         {
         minimal = client->m_timer;
         ++client;
@@ -87,21 +92,23 @@ void timer_init(struct TClient* client)
 int ret;
 struct itimerval curr_value;
 ret = getitimer( ITIMER_REAL, &curr_value );
+fprintf( stderr, "timer_init:\n  curr_value.it_value: %lu.%02lu\n  curr_value.it_interval: %lu.%02lu\n", curr_value.it_value.tv_sec, curr_value.it_value.tv_usec, curr_value.it_interval.tv_sec, curr_value.it_interval.tv_usec );
 //TODO: ret
 if ( timer_iszero( &curr_value.it_value ) )
     {
-    struct itimerval new_value;
-    timer_setzero( &new_value.it_interval );
-    new_value.it_value = p_wait;
-    ret = setitimer( ITIMER_REAL, &new_value, NULL );
+    timer_setzero( &curr_value.it_interval );
+    curr_value.it_value = p_wait;
+    ret = setitimer( ITIMER_REAL, &curr_value, NULL );
     //TODO: ret
     timer_setnegative( &client->m_timer );
+fprintf( stderr, "\n  new_value.it_value: %lu.%02lu\n  new_value.it_interval: %lu.%02lu\n", curr_value.it_value.tv_sec, curr_value.it_value.tv_usec, curr_value.it_interval.tv_sec, curr_value.it_interval.tv_usec );
     return;
     }
 else if ( timer_iszero( &curr_value.it_interval ) )
     {
     timer_sub( &curr_value.it_interval, &p_wait, &curr_value.it_value );
     ret = setitimer( ITIMER_REAL, &curr_value, NULL );
+fprintf( stderr, "\n  new_value.it_value: %lu.%02lu\n  new_value.it_interval: %lu.%02lu\n\n", curr_value.it_value.tv_sec, curr_value.it_value.tv_usec, curr_value.it_interval.tv_sec, curr_value.it_interval.tv_usec );
     //TODO: ret
     }
 timer_sub( &client->m_timer, &p_wait, &curr_value.it_value );
@@ -111,28 +118,34 @@ void timer_alarm()
 {
 /*disconnect*/
 int index = 0;
-struct TClient* client = g_clients.m_client;
 while ( index < g_clients.m_count )
     {
+    struct TClient* client = g_clients.m_client + index;
     if ( timer_isnegative( &client->m_timer ) )
         {
         client_disconnect( client );
         }
     else
         {
-        ++client;
         ++index;
         }
     }
 /**/
+/* get minimal timeout */
 struct timeval minimal = timer_getminimal();
+/**/
+/* set negative where minimal timeout else substract timeouts */
 index = 0;
-client = g_clients.m_client;
+struct TClient* client = g_clients.m_client + index;
 while ( index < g_clients.m_count )
     {
-    if ( (client->m_timer.tv_sec == minimal.tv_sec) && (client->m_timer.tv_usec == minimal.tv_usec) )
+    if ( timer_isequal( &minimal, &client->m_timer) )
         {
         timer_setnegative( &client->m_timer );
+        }
+    else if ( !timer_iszero( &client->m_timer ) )
+        {
+        timer_sub( &client->m_timer, &client->m_timer, &minimal );
         }
     ++index;
     ++client;
@@ -141,8 +154,8 @@ while ( index < g_clients.m_count )
 int ret;
 struct itimerval curr_value;
 ret = getitimer( ITIMER_REAL, &curr_value );
-fprintf( stderr, "timer: %08x:%08x\n", (int)curr_value.it_value.tv_sec, (int)curr_value.it_value.tv_usec );
-timer_setzero( &curr_value.it_interval );
+curr_value.it_interval = timer_getminimal();
 ret = setitimer( ITIMER_REAL, &curr_value, NULL );
+fprintf( stderr, "timer_alarm:\n  new_value.it_value: %lu.%02lu\n  new_value.it_interval: %lu.%02lu\n\n", curr_value.it_value.tv_sec, curr_value.it_value.tv_usec, curr_value.it_interval.tv_sec, curr_value.it_interval.tv_usec );
 }
 

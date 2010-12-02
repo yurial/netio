@@ -176,14 +176,14 @@ while ( index < g_clients.m_count )
     if ( client->m_ipid == pid )
         {
         client->m_ipid = -1;
-        shutdown( client->m_sock, SHUT_WR );
+        //TODO: shutdown( client->m_sock, SHUT_WR );
         client_tdisconnect( client );
         end = 1;
         }
     if ( client->m_opid == pid )
         {
         client->m_opid = -1;
-        shutdown( client->m_sock, SHUT_RD );
+        //TODO: shutdown( client->m_sock, SHUT_RD );
         end = 1;
         }
     if ( end )
