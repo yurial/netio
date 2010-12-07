@@ -718,6 +718,33 @@ void error_fcntl(int error)
 #endif
 }
 
+void error_getitimer(int error)
+{
+#ifdef USEPERROR
+    errno = error;
+    perror( NULL );
+#else
+    char* msg = NULL;
+    #ifndef USEMINIMAL
+    switch ( error )
+        {
+        case EFAULT:
+            msg = "new_value, old_value, or curr_value is not valid a pointer.";
+            break;
+        case EINVAL:
+            msg = "which is not one of ITIMER_REAL, ITIMER_VIRTUAL, or ITIMER_PROF; or (since Linux 2.6.22) one of the tv_usec fields in the structure pointed to by new_value contains a value outside the range 0 to 999999.";
+            break;
+        }
+    #endif
+    fprintf( stderr, "error: %s\n", msg );
+#endif
+}
+
+void error_setitimer(int error)
+{
+error_getitimer( error );
+}
+
 /*
 void error_(int error)
 {
@@ -729,9 +756,6 @@ void error_(int error)
     #ifndef USEMINIMAL
     switch ( error )
         {
-        default:
-            msg = "";
-            break;
         }
     #endif
     fprintf( stderr, "error: %s\n", msg );

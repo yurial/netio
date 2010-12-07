@@ -1,3 +1,5 @@
+#include <errno.h>
+#include <stdlib.h>
 #include <sys/time.h>
 
 #include "params.h"
@@ -92,13 +94,21 @@ void timer_init(struct TClient* client)
 int ret;
 struct itimerval curr_value;
 ret = getitimer( ITIMER_REAL, &curr_value );
-//TODO: ret
+if ( -1 == ret )
+    {
+    error_getitimer( errno );
+    exit( EXIT_FAILURE );
+    }
 if ( timer_iszero( &curr_value.it_value ) )
     {
     timer_setzero( &curr_value.it_interval );
     curr_value.it_value = p_wait;
     ret = setitimer( ITIMER_REAL, &curr_value, NULL );
-    //TODO: ret
+    if ( -1 == ret )
+        {
+        error_setitimer( errno );
+        exit( EXIT_FAILURE );
+        }
     timer_setnegative( &client->m_timer );
     return;
     }
@@ -106,7 +116,11 @@ else if ( timer_iszero( &curr_value.it_interval ) )
     {
     timer_sub( &curr_value.it_interval, &p_wait, &curr_value.it_value );
     ret = setitimer( ITIMER_REAL, &curr_value, NULL );
-    //TODO: ret
+    if ( -1 == ret )
+        {
+        error_setitimer( errno );
+        exit( EXIT_FAILURE );
+        }
     }
 timer_sub( &client->m_timer, &p_wait, &curr_value.it_value );
 }
@@ -148,10 +162,19 @@ while ( index < g_clients.m_count )
     ++client;
     }
 /**/
-int ret;
 struct itimerval curr_value;
-ret = getitimer( ITIMER_REAL, &curr_value );
+int ret = getitimer( ITIMER_REAL, &curr_value );
+if ( -1 == ret )
+    {
+    error_getitimer( errno );
+    exit( EXIT_FAILURE );
+    }
 curr_value.it_interval = timer_getminimal();
 ret = setitimer( ITIMER_REAL, &curr_value, NULL );
+if ( -1 == ret )
+    {
+    error_setitimer( errno );
+    exit( EXIT_FAILURE );
+    }
 }
 

@@ -21,5 +21,7 @@ void error_fsync(int error);
 void error_poll(int error);
 void error_pipe(int error);
 void error_fcntl(int error);
+void error_getitimer(int error);
+void error_setitimer(int error);
 
 #endif
