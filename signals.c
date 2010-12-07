@@ -23,6 +23,45 @@ void signal_handler(int sig);
 void signal_ALRM(int sig);
 void signal_CHLD(int sig);
 
+struct str_signal
+{
+const char* m_str;
+int         m_signal;
+};
+
+struct str_signal sigarr[] = {
+    { "SIGHUP",  SIGHUP  },
+    { "SIGINT",  SIGINT  },
+    { "SIGQUIT", SIGQUIT },
+    { "SIGILL",  SIGILL  },
+    { "SIGABRT", SIGABRT },
+    { "SIGFPE",  SIGFPE  },
+    { "SIGKILL", SIGKILL },
+    { "SIGSEGV", SIGSEGV },
+    { "SIGPIPE", SIGPIPE },
+    { "SIGALRM", SIGALRM },
+    { "SIGTERM", SIGTERM },
+    { "SIGUSR1", SIGUSR1 },
+    { "SIGUSR2", SIGUSR2 },
+    { "SIGCHLD", SIGCHLD },
+    { "SIGCONT", SIGCONT },
+    { "SIGSTOP", SIGSTOP },
+    { "SIGTSTP", SIGTSTP },
+    { "SIGTTIN", SIGTTIN },
+    { "SIGTTOU", SIGTTOU }
+};
+
+int signal_str(const char* str)
+{
+int index = 0;
+for (index = 0; index < sizeof(sigarr)/sizeof(struct str_signal); ++index)
+    {
+    if ( !strcmp( sigarr[index].m_str, str ) )
+        return sigarr[index].m_signal;
+    }
+return atoi( str );
+}
+
 void signals_init()
 {
 sigemptyset( &sigset );
@@ -54,14 +93,14 @@ signal( SIGCHLD, signal_CHLD );
 void signal_handler(int sig)
 {
 switch ( sig )
-    {
-    case SIGINT:
-        action_normterm();
-        break;
-    case SIGHUP:
-    case SIGTERM:
-    case SIGQUIT:
-        action_syncterm();
+{
+case SIGINT:
+    action_normterm();
+    break;
+case SIGHUP:
+case SIGTERM:
+case SIGQUIT:
+    action_syncterm();
         break;
     case SIGILL:
     case SIGABRT:

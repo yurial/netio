@@ -4,6 +4,7 @@
 #include <getopt.h>
 #include <assert.h>
 #include <signal.h>
+#include "signal.h"
 #include "params.h"
 #include "help.h"
 #include "cp.h"
@@ -22,7 +23,7 @@ char*           p_outcmd       = NULL;
 enum iomode     p_outmode      = IOMODE_NONE;
 char*           p_iocmd        = NULL;
 enum iomode     p_iomode       = IOMODE_NONE;
-int             p_chldterm     = SIGTERM; //TODO:
+int             p_chldterm     = SIGTERM;
 struct timeval  p_wait         = { 0 };
 int             p_sync         = 0;
 int             p_recvbuff     = 4096;
@@ -33,6 +34,7 @@ const static struct option long_options[] = {
         { "io",        1, 0,  0  },
         { "rb",        1, 0,  0  },
         { "sb",        1, 0,  0  },
+        { "sync",      1, 0,  0  },
         { "help",      0, 0, 'h' },
         { "listen",    0, 0, 'l' },
         { "once",      0, 0, '1' },
@@ -41,7 +43,7 @@ const static struct option long_options[] = {
         { "in",        1, 0, 'i' },
         { "out",       1, 0, 'o' },
         { "wait",      1, 0, 'w' },
-        { "sync",      0, 0, 's' },
+        { "signal",    0, 0, 's' },
         { 0,           0, 0,  0  }
     };
 
@@ -106,6 +108,10 @@ while( 1 )
                 else if ( *pend == 'm' || *pend == 'M' )
                     p_sendbuff *= 1024 * 1024;
                 }
+            else if ( option_index == 3 )
+                {
+                p_sync = 1;
+                }
             }
             break;
         case 'h':
@@ -166,7 +172,7 @@ while( 1 )
             break;
         case 's':
             {
-            p_sync = 1;
+            p_chldterm = signal_str( optarg );
             }
             break;
         default:
