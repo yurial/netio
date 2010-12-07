@@ -29,7 +29,7 @@ int             p_sync         = 0;
 int             p_recvbuff     = 4096;
 int             p_sendbuff     = 4096;
 
-const static char options[] = "hl1q:c:i:o:w:sb:";
+const static char options[] = "hl1q:c:i:o:w:s:b:";
 const static struct option long_options[] = {
         { "io",        1, 0,  0  },
         { "rb",        1, 0,  0  },
@@ -43,7 +43,7 @@ const static struct option long_options[] = {
         { "in",        1, 0, 'i' },
         { "out",       1, 0, 'o' },
         { "wait",      1, 0, 'w' },
-        { "signal",    0, 0, 's' },
+        { "signal",    1, 0, 's' },
         { 0,           0, 0,  0  }
     };
 
