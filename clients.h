@@ -26,8 +26,8 @@ extern struct TClients g_clients;
 
 void client_add(int socket);
 
-int client_POLLOUT(int nready, struct pollfd* set, struct TClient* client, char* recvbuff);
-int client_POLLIN (int nready, struct pollfd* set, struct TClient* client, char* recvbuff);
+inline int client_POLLOUT(int nready, struct pollfd* set, struct TClient* client, char* recvbuff);
+inline int client_POLLIN (int nready, struct pollfd* set, struct TClient* client, char* recvbuff);
 
 void client_sendall(char* buff, const size_t buffsize);
 

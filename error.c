@@ -163,7 +163,9 @@ void error_accept(int error)
         case EPERM:
             msg = "Firewall rules forbid connection.";
             break;
-        case ENOSR:
+#ifdef ENOSR
+	case ENOSR:
+#endif
         case ESOCKTNOSUPPORT:
         case EPROTONOSUPPORT:
         case ETIMEDOUT:
@@ -554,9 +556,11 @@ char* msg = NULL;
         case EISDIR:
             msg = "An ELF interpreter was a directory.";
             break;
+#ifdef ELIBBAD
         case ELIBBAD:
             msg = "An ELF interpreter was not in a recognized format.";
             break;
+#endif
         case ELOOP:
             msg = "Too many symbolic links were encountered in resolving filename or the name of a script or ELF interpreter.";
             break;

@@ -11,7 +11,7 @@
 #include "set.h"
 #include "params.h"
 
-sigset_t sigset;
+sigset_t g_sigset;
 
 void action_normterm();
 void action_syncterm();
@@ -64,10 +64,10 @@ return atoi( str );
 
 void signals_init()
 {
-sigemptyset( &sigset );
-sigaddset( &sigset, SIGINT );
-sigaddset( &sigset, SIGUSR1 );
-sigaddset( &sigset, SIGUSR2 );
+sigemptyset( &g_sigset );
+sigaddset( &g_sigset, SIGINT );
+sigaddset( &g_sigset, SIGUSR1 );
+sigaddset( &g_sigset, SIGUSR2 );
 signals_cansyncterm();
 
 signal( SIGHUP,  signal_handler );
@@ -79,7 +79,9 @@ signal( SIGSEGV, signal_handler );
 signal( SIGTERM, signal_handler );
 signal( SIGUSR1, signal_handler );
 signal( SIGUSR2, signal_handler );
+#ifdef SIGPWR
 signal( SIGPWR,  signal_handler );
+#endif
 signal( SIGALRM, signal_ALRM );
 signal( SIGCHLD, signal_CHLD );
 //signal( SIGABRT, );
@@ -107,9 +109,11 @@ case SIGQUIT:
     case SIGFPE:
     case SIGSEGV:
     case SIGPIPE:
-    case SIGPWR:
+#ifdef SIGPWR
+   case SIGPWR:
         action_fastterm();
         break;
+#endif
     case SIGUSR1:
         action_reexec();
         break;
@@ -124,26 +128,26 @@ case SIGQUIT:
 
 void signals_block()
 {
-sigprocmask( SIG_BLOCK, &sigset, NULL );
+sigprocmask( SIG_BLOCK, &g_sigset, NULL );
 }
 
 void signals_unblock()
 {
-sigprocmask( SIG_UNBLOCK, &sigset, NULL );
+sigprocmask( SIG_UNBLOCK, &g_sigset, NULL );
 }
 
 void signals_cansyncterm()
 {
-sigaddset( &sigset, SIGHUP );
-sigaddset( &sigset, SIGTERM );
-sigaddset( &sigset, SIGQUIT );
+sigaddset( &g_sigset, SIGHUP );
+sigaddset( &g_sigset, SIGTERM );
+sigaddset( &g_sigset, SIGQUIT );
 }
 
 void signals_cantsyncterm()
 {
-sigdelset( &sigset, SIGHUP );
-sigdelset( &sigset, SIGTERM );
-sigdelset( &sigset, SIGQUIT );
+sigdelset( &g_sigset, SIGHUP );
+sigdelset( &g_sigset, SIGTERM );
+sigdelset( &g_sigset, SIGQUIT );
 }
 
 void signal_ALRM(int sig)
