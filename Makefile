@@ -1,20 +1,23 @@
-.PHONY: all clean install uninstall dist man obj
-CFLAGS=-DVERSION="`cat version`" -DBUILD="`cat build`" -DDATE="`cat date`"
--include Makefile.inc
--include $(wildcard %.d)
-
 all: netio
+.PHONY: all clean install uninstall dist man obj depend
+CFLAGS=-DVERSION="\"`cat version`\"" -DBUILD="\"`cat build`\"" -DDATE="\"`cat date`\""
+-include Makefile.inc
+-include *.d
 
 SRC=$(wildcard *.c)
 OBJ=$(SRC:.c=.o)
 DEP=$(SRC:.c=.d)
 
-netio: $(OBJ)
 $(OBJ): Makefile Makefile.inc version build date
-$(OBJ): $(DEP)
+
 %.d: %.c
-	@echo "$@ " > $@
-	@cc -MM $< >> $@
+	echo -n "$@ " > $@
+	cc -MM $< >> $@
+
+netio: $(DEP) $(OBJ)
+	cc $(CFLAGS) $(OBJ) -o $@
+
+depend: $(DEP)
 
 clean:
 	rm -f *.d *.o netio man/man1
