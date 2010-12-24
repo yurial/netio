@@ -13,55 +13,55 @@ if [ "_$1" = "_--help" ]; then
     exit
 fi
 
-echo -n "OPT=" >makefile
+echo -n "CFLAGS+=" >Makefile.inc
 if [ "_$1" = "_" ]; then
-    echo -n " -g -DDEBUG" >>makefile
-    echo -n " -DUSEUNIXSOCK" >>makefile
-    echo -n " -DUSEIP4" >>makefile
-    echo -n " -DUSETCP" >>makefile
-    echo -n " -DUSEUDP" >>makefile
+    echo -n " -g -DDEBUG" >>Makefile.inc
+    echo -n " -DUSEUNIXSOCK" >>Makefile.inc
+    echo -n " -DUSEIP4" >>Makefile.inc
+    echo -n " -DUSETCP" >>Makefile.inc
+    echo -n " -DUSEUDP" >>Makefile.inc
 fi
 
 while true ; do
         case "$1" in
                 --enable-debug)
                     echo "Enable debug info"
-                    echo -n " -g -DDEBUG" >>makefile
+                    echo -n " -g -DDEBUG" >>Makefile.inc
                     shift
                     ;;
                 --enable-minimal)
 		    echo "Enable minimal build"
-		    echo -n " -DUSEMINIMAL" >>makefile
+		    echo -n " -DUSEMINIMAL" >>Makefile.inc
 		    shift
 		    ;;
 		--enable-unixsock)
                     echo "Enable unixsock support"
-                    echo -n " -DUSEUNIXSOCK" >>makefile
+                    echo -n " -DUSEUNIXSOCK" >>Makefile.inc
                     shift
                     ;;
                 --enable-ipv4)
                     echo "Enable ipv4 support"
-                    echo -n " -DUSEIP4" >>makefile
+                    echo -n " -DUSEIP4" >>Makefile.inc
                     shift
                     ;;
                 --enable-ipv6)
                     echo "Enable ipv6 support"
-                    echo -n " -DUSEIP6" >>makefile
+                    echo -n " -DUSEIP6" >>Makefile.inc
                     shift
                     ;;
                 --enable-tcp)
                     echo "Enable tcp support"
-                    echo -n " -DUSETCP" >>makefile
+                    echo -n " -DUSETCP" >>Makefile.inc
                     shift
                     ;;
                 --enable-udp)
                     echo "Enable udp support"
-                    echo -n " -DUSEUDP" >>makefile
+                    echo -n " -DUSEUDP" >>Makefile.inc
                     shift
                     ;;
                 --enable-sctp)
                     echo "Enable sctp support"
-                    echo -n " -DUSESCTP" >>makefile
+                    echo -n " -DUSESCTP" >>Makefile.inc
                     shift
                     ;;
                 "")
@@ -73,5 +73,5 @@ while true ; do
         esac
 done
 
-echo "" >>makefile
-cat makefile.def >>makefile
+echo "" >>Makefile.inc
+
