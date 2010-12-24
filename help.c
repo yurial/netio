@@ -12,3 +12,8 @@ fprintf( stderr, "%s\n", "<local>           unix:<socket>" );
 fprintf( stderr, "%s\n", "<socket>          path to unix socket" );
 }
 
+void build_str(FILE* file)
+{
+fprintf( file, "v%s build %s %s\n", VERSION, BUILD, DATE );
+}
+

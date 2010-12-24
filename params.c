@@ -29,13 +29,14 @@ int             p_sync         = 0;
 int             p_recvbuff     = 4096;
 int             p_sendbuff     = 4096;
 
-const static char options[] = "hl1q:c:i:o:w:s:b:";
+const static char options[] = "hvVl1q:c:i:o:w:s:b:";
 const static struct option long_options[] = {
         { "io",        1, 0,  0  },
         { "rb",        1, 0,  0  },
         { "sb",        1, 0,  0  },
         { "sync",      1, 0,  0  },
         { "help",      0, 0, 'h' },
+        { "version",   0, 0, 'v' },
         { "listen",    0, 0, 'l' },
         { "once",      0, 0, '1' },
         { "connqueue", 1, 0, 'q' },
@@ -118,6 +119,17 @@ while( 1 )
             {
             help();
             exit( EXIT_SUCCESS );
+            }
+            break;
+        case 'v':
+            {
+            build_str( stdout );
+            exit( EXIT_SUCCESS );
+            }
+            break;
+        case 'V':
+            {
+            build_str( stderr );
             }
             break;
         case 'l':
