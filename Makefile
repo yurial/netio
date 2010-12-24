@@ -10,7 +10,7 @@ OBJ=$(SRC:.c=.o)
 DEP=$(SRC:.c=.d)
 
 netio: $(OBJ)
-$(OBJ): Makefile Makefile.inc
+$(OBJ): Makefile Makefile.inc version build date
 $(OBJ): $(DEP)
 %.d: %.c
 	@echo "$@ " > $@
