@@ -33,7 +33,7 @@ void error_socket(int error)
             break;
         }
     #endif
-    fprintf( stderr, "socket() error: %s\n", msg );
+    fprintf( stderr, "socket() error #%d: %s\n", error, msg );
 #endif
 }
 
@@ -52,7 +52,7 @@ void error_malloc(int error)
             break;
         }
     #endif
-    fprintf( stderr, "malloc() error: %s\n", msg );
+    fprintf( stderr, "malloc() error #%d: %s\n", error, msg );
 #endif
 }
 
@@ -107,7 +107,7 @@ void error_bind(int error)
             break;
         }
     #endif
-    fprintf( stderr, "bind() error: %s\n", msg );
+    fprintf( stderr, "bind() error #%d: %s\n", error, msg );
 #endif
 }
 
@@ -173,7 +173,7 @@ void error_accept(int error)
             break;
         }
     #endif
-    fprintf( stderr, "accept() error: %s\n", msg );
+    fprintf( stderr, "accept() error #%d: %s\n", error, msg );
 #endif
 }
 
@@ -201,7 +201,7 @@ void error_listen(int error)
         break;
         }
     #endif
-    fprintf( stderr, "listen() error: %s\n", msg );
+    fprintf( stderr, "listen() error #%d: %s\n", error, msg );
 #endif
 }
 
@@ -259,7 +259,7 @@ void error_connect(int error)
             break;
         }
     #endif
-    fprintf( stderr, "connect() error: %s\n", msg );
+    fprintf( stderr, "connect() error #%d: %s\n", error, msg );
 #endif
 }
 
@@ -290,7 +290,7 @@ void error_dup2(int error)
             break;
         }
     #endif
-    fprintf( stderr, "dup2() error: %s\n", msg );
+    fprintf( stderr, "dup2() error #%d: %s\n", error, msg );
 #endif
 }
 
@@ -315,7 +315,7 @@ void error_close(int error)
             break;
         }
     #endif
-    fprintf( stderr, "close() error: %s\n", msg );
+    fprintf( stderr, "close() error #%d: %s\n", error, msg );
 #endif
 }
 
@@ -352,7 +352,7 @@ void error_read(int error)
             break;
         }
     #endif
-    fprintf( stderr, "read() error: %s\n", msg );
+    fprintf( stderr, "read() error #%d: %s\n", error, msg );
 #endif
 }
 
@@ -394,7 +394,7 @@ void error_write(int error)
             msg = "fd is connected to a pipe or socket whose reading end is closed. When this happens the writing process will also receive a SIGPIPE signal. (Thus, the write return value is seen only if the program catches, blocks or ignores this signal.)";
             break;
         }
-    fprintf( stderr, "write() error: %s\n", msg );
+    fprintf( stderr, "write() error #%d: %s\n", error, msg );
     #endif
 #endif
 }
@@ -438,7 +438,7 @@ void error_recv(int error)
             break;
         }
     #endif
-    fprintf( stderr, "recv() error: %s\n", msg );
+    fprintf( stderr, "recv() error #%d: %s\n", error, msg );
 #endif
 }
 
@@ -502,7 +502,7 @@ void error_send(int error)
             break;
         }
     #endif
-    fprintf( stderr, "send() error: %s\n", msg );
+    fprintf( stderr, "send() error #%d: %s\n", error, msg );
 #endif
 }
 
@@ -524,7 +524,7 @@ void error_fork(int error)
             break;
         }
     #endif
-    fprintf( stderr, "fork() error: %s\n", msg );
+    fprintf( stderr, "fork() error #%d: %s\n", error, msg );
 #endif
 }
 
@@ -593,7 +593,7 @@ char* msg = NULL;
             break;
         }
     #endif
-    fprintf( stderr, "exec() error: %s\n", msg );
+    fprintf( stderr, "exec() error #%d: %s\n", error, msg );
 #endif
 }
 
@@ -618,7 +618,7 @@ char* msg = NULL;
             break;
         }
     #endif
-    fprintf( stderr, "fsync() error: %s\n", msg );
+    fprintf( stderr, "fsync() error #%d: %s\n", error, msg );
 #endif
 }
 
@@ -646,7 +646,7 @@ void error_poll(int error)
             break;
         }
     #endif
-    fprintf( stderr, "poll() error: %s\n", msg );
+    fprintf( stderr, "poll() error #%d: %s\n", error, msg );
 #endif
 }
 
@@ -674,7 +674,7 @@ void error_pipe(int error)
             break;
         }
     #endif
-    fprintf( stderr, "pipe() error: %s\n", msg );
+    fprintf( stderr, "pipe() error #%d: %s\n", error, msg );
 #endif
 }
 
@@ -718,7 +718,7 @@ void error_fcntl(int error)
             break;
         }
     #endif
-    fprintf( stderr, "fcntl() error: %s\n", msg );
+    fprintf( stderr, "fcntl() error #%d: %s\n", error, msg );
 #endif
 }
 
@@ -740,7 +740,7 @@ void error_getitimer(int error)
             break;
         }
     #endif
-    fprintf( stderr, "error: %s\n", msg );
+    fprintf( stderr, "error #%d: %s\n", error, msg );
 #endif
 }
 

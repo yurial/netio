@@ -10,6 +10,7 @@ if [ "_$1" = "_--help" ]; then
     echo "  --enable-tcp"
     echo "  --enable-udp"
     echo "  --enable-sctp"
+    echo "  --with-perror"
     exit
 fi
 
@@ -24,52 +25,57 @@ fi
 
 while true ; do
         case "$1" in
-                --enable-debug)
-                    echo "Enable debug info"
-                    echo -n " -g -DDEBUG" >>Makefile.inc
-                    shift
-                    ;;
-                --enable-minimal)
+        --enable-debug)
+            echo "Enable debug info"
+            echo -n " -g -DDEBUG" >>Makefile.inc
+            shift
+            ;;
+        --enable-minimal)
 		    echo "Enable minimal build"
 		    echo -n " -DUSEMINIMAL" >>Makefile.inc
 		    shift
 		    ;;
-		--enable-unixsock)
-                    echo "Enable unixsock support"
-                    echo -n " -DUSEUNIXSOCK" >>Makefile.inc
-                    shift
-                    ;;
-                --enable-ipv4)
-                    echo "Enable ipv4 support"
-                    echo -n " -DUSEIP4" >>Makefile.inc
-                    shift
-                    ;;
-                --enable-ipv6)
-                    echo "Enable ipv6 support"
-                    echo -n " -DUSEIP6" >>Makefile.inc
-                    shift
-                    ;;
-                --enable-tcp)
-                    echo "Enable tcp support"
-                    echo -n " -DUSETCP" >>Makefile.inc
-                    shift
-                    ;;
-                --enable-udp)
-                    echo "Enable udp support"
-                    echo -n " -DUSEUDP" >>Makefile.inc
-                    shift
-                    ;;
-                --enable-sctp)
-                    echo "Enable sctp support"
-                    echo -n " -DUSESCTP" >>Makefile.inc
-                    shift
-                    ;;
-                "")
-                    break
-                    ;;
-                *)
-                    shift
-                    ;;
+        --enable-unixsock)
+            echo "Enable unixsock support"
+            echo -n " -DUSEUNIXSOCK" >>Makefile.inc
+            shift
+            ;;
+        --enable-ipv4)
+            echo "Enable ipv4 support"
+            echo -n " -DUSEIP4" >>Makefile.inc
+            shift
+            ;;
+        --enable-ipv6)
+            echo "Enable ipv6 support"
+            echo -n " -DUSEIP6" >>Makefile.inc
+            shift
+            ;;
+        --enable-tcp)
+            echo "Enable tcp support"
+            echo -n " -DUSETCP" >>Makefile.inc
+            shift
+            ;;
+        --enable-udp)
+            echo "Enable udp support"
+            echo -n " -DUSEUDP" >>Makefile.inc
+            shift
+            ;;
+        --enable-sctp)
+            echo "Enable sctp support"
+            echo -n " -DUSESCTP" >>Makefile.inc
+            shift
+            ;;
+        --with-perror)
+            echo "With perror"
+            echo -n " -DUSEPERROR" >>Makefile.inc
+            shift
+            ;;
+        "")
+            break
+            ;;
+        *)
+            shift
+            ;;
         esac
 done
 
