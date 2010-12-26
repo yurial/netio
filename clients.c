@@ -241,7 +241,7 @@ set->revents ^= POLLIN;
 
 if ( p_iomode == IOMODE_NULL || p_outmode == IOMODE_NULL )
     {
-    ssize_t truncsize = recv( client->m_sock, NULL, p_recvbuff, MSG_TRUNC );
+    ssize_t truncsize = recv( client->m_sock, recvbuff, p_recvbuff, MSG_TRUNC );
     if ( truncsize == -1 )
         {
         error_recv();
@@ -274,7 +274,7 @@ if ( writesize == -1 )
     error_write( errno );
     exit( EXIT_FAILURE); // WTF?
     }
-ssize_t truncsize = recv( client->m_sock, NULL, writesize, MSG_TRUNC );
+ssize_t truncsize = recv( client->m_sock, recvbuff, writesize, MSG_TRUNC );
 if ( truncsize == -1 )
     {
     error_recv();
