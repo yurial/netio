@@ -226,6 +226,8 @@ while ( index < g_clients.m_count )
     if ( client->m_opid == pid )
         {
         client->m_opid = -1;
+        index = client2set( index );
+        g_set[index].events |= POLLIN; //socket can be closed
         //TODO: shutdown( client->m_sock, SHUT_RD );
         end = 1;
         }

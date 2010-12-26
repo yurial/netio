@@ -30,7 +30,7 @@ return index + 2 + g_servers.m_count;
 
 void client_add(int sock)
 {
-int events = POLLHUP;
+int events = POLLHUP | POLLERR | POLLNVAL;
 struct TClient client;
 client.m_sock = sock;
 client.m_ipid = -1;
