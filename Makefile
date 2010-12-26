@@ -20,18 +20,22 @@ netio: $(DEP) $(OBJ)
 depend: $(DEP)
 
 clean:
-	rm -f *.d *.o netio man/man1
+	rm -rf *.d *.o netio man/man1
 
 distclean:
-	rm -f *.d *.o netio man/man1 *.gz *.bz2
+	rm -rf *.d *.o netio man/man1 *.gz *.bz2
 
 install: netio man
 	cp netio /usr/bin
 	cp man/man1/netio.1.bz2 /usr/share/man/man1
 
+symlinks: netio man
+	ln -sf $(PWD)/netio /usr/bin/
+	ln -sf man/man1/netio.1.bz2 /usr/share/man/man1/
+
 uninstall:
 	rm -f /usr/bin/netio
-	rm -f /usr/man/man1/netio.1.bz2
+	rm -f /usr/share/man/man1/netio.1.bz2
 
 dist: netio.tar.gz netio.tar.bz2
 
