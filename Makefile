@@ -31,7 +31,7 @@ install: netio man
 
 symlinks: netio man
 	ln -sf $(PWD)/netio /usr/bin/
-	ln -sf man/man1/netio.1.bz2 /usr/share/man/man1/
+	ln -sf $(PWD)/man/man1/netio.1.bz2 /usr/share/man/man1/
 
 uninstall:
 	rm -f /usr/bin/netio
