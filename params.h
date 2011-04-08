@@ -17,7 +17,7 @@ extern int            p_targetc;
 extern int            p_server;
 extern int            p_once;
 extern int            p_connqueue;
-extern char*          p_cmd;
+extern const char*    p_cmd;
 extern char*          p_incmd;
 extern enum iomode    p_inmode;
 extern char*          p_outcmd;

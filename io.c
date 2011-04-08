@@ -3,13 +3,16 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <poll.h>
 #include <fcntl.h>
 
 #include "set.h"
 #include "error.h"
 #include "servers.h"
 #include "clients.h"
+#include "signals.h"
 #include "params.h"
+#include "run.h"
 
 int g_ipid;
 int g_opid;
@@ -17,13 +20,13 @@ int g_opid;
 void io_init()
 {
 int ret;
-g_set = malloc( sizeof(struct pollfd) * 2 );
-g_set[0].fd = STDOUT_FILENO;
-g_set[0].events = 0;
-g_set[0].revents = 0;
-g_set[1].fd = STDIN_FILENO;
-g_set[1].events = 0;
-g_set[1].revents = 0;
+g_set = (struct pollfd*)malloc( sizeof(struct pollfd) * 2 );
+g_set[STDOUT_FILENO].fd = STDOUT_FILENO;
+g_set[STDOUT_FILENO].events = 0;
+g_set[STDOUT_FILENO].revents = 0;
+g_set[STDIN_FILENO].fd = STDIN_FILENO;
+g_set[STDIN_FILENO].events = 0;
+g_set[STDIN_FILENO].revents = 0;
 g_setcount = 2;
 
 if ( p_iomode == IOMODE_ONCE )
@@ -123,9 +126,9 @@ if ( ret == -1 )
     }
 }
 
-inline int output_loop(int nready)
+int output_loop(int nready)
 {
-struct pollfd* set = g_set;
+struct pollfd* set = g_set + STDOUT_FILENO;
 
 if ( nready && !set->revents )
     return nready;
@@ -154,19 +157,21 @@ else
 return nready;
 }
 
-inline int input_loop(char* sendbuff, int nready)
+int input_loop(char* sendbuff, int nready)
 {
-struct pollfd* set = g_set + 1;
+struct pollfd* set = g_set + STDIN_FILENO;
 
 if ( !(nready && set->revents) )
     return nready;
 
 --nready;
-if ( set->revents & POLLHUP )
+if ( (set->revents & POLLHUP) && !(set->revents & POLLIN) )
     {
     set->revents ^= POLLHUP;
     set->events = 0;
     set->fd = -1;
+    client_disconnectall();
+    return nready;
     }
 
 if ( set->revents & POLLIN )
@@ -182,21 +187,9 @@ if ( set->revents & POLLIN )
         }
     if ( readcount == 0 )
         {
-        set->fd = -1;
         set->events = 0;
-        int index = 0;
-        while ( index < g_clients.m_count )
-            {
-            struct TClient* client = g_clients.m_client + index;
-            if ( client->m_timer.tv_sec != 0 || client->m_timer.tv_usec != 0 )
-                {
-                ++index;
-                }
-            else
-                {
-                client_tdisconnect( client );
-                }
-            }
+        set->fd = -1;
+        client_disconnectall();
         return nready;
         }
     client_sendall( sendbuff, readcount );

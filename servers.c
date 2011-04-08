@@ -1,10 +1,15 @@
 #include <errno.h>
 #include <assert.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <string.h>
 
 #include "servers.h"
+#include "clients.h"
+#include "params.h"
+#include "error.h"
 #include "set.h"
+#include "net.h"
 
 #define MAX(X,Y) (X>Y)?X:Y
 #define MIN(X,Y) (X<Y)?X:Y
@@ -14,7 +19,7 @@ struct TServers g_servers = { NULL, 0 };
 void server_add(int sock)
 {
 int newcount = g_servers.m_count + 1;
-struct TServer* servers = malloc( sizeof(struct TServer) * newcount );
+struct TServer* servers = (struct TServer*)malloc( sizeof(struct TServer) * newcount );
 
 memcpy( servers, g_servers.m_server, sizeof(struct TServer) * g_servers.m_count );
 servers[g_servers.m_count].m_sock = sock;
@@ -29,7 +34,7 @@ g_servers.m_count = newcount;
 void server_del(int sock)
 {
 int newcount = g_servers.m_count + 1;
-struct TServer* servers = malloc( sizeof(struct TServer) * newcount );
+struct TServer* servers = (struct TServer*)malloc( sizeof(struct TServer) * newcount );
 
 int index;
 for (index = 0; g_servers.m_server[index].m_sock != sock && index < g_servers.m_count; ++index)
@@ -45,12 +50,25 @@ g_servers.m_server = servers;
 g_servers.m_count = newcount;
 }
 
-inline int is_server(int index)
+void server_closeall()
+{
+int index;
+for (index = 0; index < g_servers.m_count; ++index)
+    {
+    close( g_servers.m_server[index].m_sock );
+    set_del( 2 );
+    }
+free( g_servers.m_server );
+g_servers.m_server = NULL;
+g_servers.m_count = 0;
+}
+
+int is_server(int index)
 {
 return (index < (2 + g_servers.m_count)) && (index >= 2);
 }
 
-inline int servers_loop(int nready)
+int servers_loop(int nready)
 {
 int index;
 for (index = 2; nready > 0 && is_server( index ); ++index)
@@ -74,6 +92,11 @@ for (index = 2; nready > 0 && is_server( index ); ++index)
         exit( EXIT_FAILURE );
         }
     client_add( client_sock );
+    if ( p_once )
+        {
+        server_closeall();
+        return 0;
+        }
     }
 return nready;
 }

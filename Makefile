@@ -1,6 +1,7 @@
+CC=gcc
 all: netio
 .PHONY: all clean install uninstall dist man obj depend
-CFLAGS=-DVERSION="\"`cat version`\"" -DBUILD="\"`cat build`\"" -DDATE="\"`cat date`\""
+CFLAGS=-DVERSION="\"`cat version`\"" -DBUILD="\"`cat build`\"" -DDATE="\"`cat date`\"" -Wall
 -include Makefile.inc
 -include *.d
 
@@ -11,11 +12,10 @@ DEP=$(SRC:.c=.d)
 $(OBJ): Makefile Makefile.inc version build date
 
 %.d: %.c
-	echo -n "$@ " > $@
-	cc -MM $< >> $@
+	echo -n "$@ " > $@ && $(CC) -MM $< >> $@ || rm $@
 
 netio: $(DEP) $(OBJ)
-	cc $(CFLAGS) $(OBJ) -o $@
+	$(CC) $(CFLAGS) $(OBJ) -o $@
 
 depend: $(DEP)
 

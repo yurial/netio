@@ -2,13 +2,18 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <signal.h>
 #include <sys/socket.h>
 #include <fcntl.h>
 
 #include "clients.h"
 #include "servers.h"
 #include "params.h"
+#include "error.h"
+#include "signals.h"
+#include "timer.h"
 #include "set.h"
+#include "run.h"
 
 #include <sys/time.h>
 #include <stdio.h>
@@ -18,12 +23,12 @@
 
 struct TClients g_clients = { NULL, 0, 0 };
 
-inline int set2client(int index)
+int set2client(int index)
 {
 return index - 2 - g_servers.m_count;
 }
 
-inline int client2set(int index)
+int client2set(int index)
 {
 return index + 2 + g_servers.m_count;
 }
@@ -51,41 +56,53 @@ switch ( p_iomode )
         client.m_ipid = client.m_opid;
         }
         break;
-    }
-if ( p_iomode == IOMODE_NONE )
-    {
-    switch ( p_inmode )
+    case IOMODE_NONE:
         {
-        case IOMODE_BLOCK:
-            shutdown( sock, SHUT_WR );
-            break;
-        case IOMODE_EVERY:
+        switch ( p_inmode )
             {
-            client.m_ipid = run( p_incmd, sock, STDIN_FILENO );
-            if ( client.m_ipid == -1 )
+            case IOMODE_BLOCK:
+                shutdown( sock, SHUT_WR );
+                break;
+            case IOMODE_EVERY:
                 {
-                close( sock );
-                return;
+                client.m_ipid = run( p_incmd, sock, STDIN_FILENO );
+                if ( client.m_ipid == -1 )
+                    {
+                    close( sock );
+                    return;
+                    }
                 }
+                break;
+            case IOMODE_ONCE: 
+            case IOMODE_NULL:
+            case IOMODE_NONE:
+                break;
             }
-            break;
-        }
-    switch ( p_outmode )
-        {
-        case IOMODE_BLOCK:
-            shutdown( sock, SHUT_RD );
-            break;
-        case IOMODE_EVERY:
+        switch ( p_outmode )
             {
-            client.m_opid = run( p_outcmd, STDOUT_FILENO, sock );
-            if ( client.m_opid == -1 )
+            case IOMODE_BLOCK:
+                shutdown( sock, SHUT_RD );
+                break;
+            case IOMODE_EVERY:
                 {
-                close( sock );
-                return;
+                client.m_opid = run( p_outcmd, STDOUT_FILENO, sock );
+                if ( client.m_opid == -1 )
+                    {
+                    close( sock );
+                    return;
+                    }
                 }
+                break;
+            case IOMODE_ONCE: 
+            case IOMODE_NULL:
+            case IOMODE_NONE:
+                break;
             }
-            break;
         }
+        break;
+    case IOMODE_ONCE:
+    case IOMODE_NULL:
+        break;
     }
 
 int onone = p_iomode == IOMODE_NONE && p_outmode == IOMODE_NONE;
@@ -93,7 +110,7 @@ int oonce = p_iomode == IOMODE_ONCE || p_outmode == IOMODE_ONCE;
 int onull = p_iomode == IOMODE_NULL || p_outmode == IOMODE_NULL;
 if ( onone || oonce )
     {
-    if ( !(g_set[0].events & POLLOUT) )
+    if ( !(g_set[STDOUT_FILENO].events & POLLOUT) )
         {
         events |= POLLIN;
         }
@@ -104,7 +121,7 @@ else if ( onull )
     }
 
 int newcount = g_clients.m_count + 1;
-struct TClient* clients = malloc( sizeof(struct TClient) * newcount );
+struct TClient* clients = (struct TClient*)malloc( sizeof(struct TClient) * newcount );
 
 memcpy( clients, g_clients.m_client, sizeof(struct TClient) * g_clients.m_count );
 clients[ g_clients.m_count ] = client;
@@ -119,7 +136,7 @@ int inone = p_iomode == IOMODE_NONE || p_inmode == IOMODE_NONE;
 int ionce = p_iomode == IOMODE_ONCE || p_inmode == IOMODE_ONCE;
 if ( (g_clients.m_blocked == 0) && (inone || ionce) )
     {
-    g_set[1].events |= POLLIN;
+    g_set[STDIN_FILENO].events |= POLLIN;
     signals_cansyncterm();
     }
 }
@@ -127,7 +144,7 @@ if ( (g_clients.m_blocked == 0) && (inone || ionce) )
 void client_del(struct TClient* client)
 {
 int newcount = g_clients.m_count - 1;
-struct TClient* clients = malloc( sizeof(struct TClient) * newcount );
+struct TClient* clients = (struct TClient*)malloc( sizeof(struct TClient) * newcount );
 
 int index;
 for (index = 0; (g_clients.m_client+index) != client && index < g_clients.m_count; ++index)
@@ -147,7 +164,7 @@ g_clients.m_client = clients;
 g_clients.m_count = newcount;
 }
 
-inline int clients_loop(char* recvbuff, int nready)
+int clients_loop(char* recvbuff, int nready)
 {
 int setindex = client2set( 0 );
 int clientindex = 0;
@@ -189,13 +206,13 @@ int inone = p_iomode == IOMODE_NONE || p_inmode == IOMODE_NONE;
 int ionce = p_iomode == IOMODE_ONCE || p_inmode == IOMODE_ONCE;
 if ( (g_clients.m_blocked == 0) && (inone || ionce) )
     {
-    g_set[1].events |= POLLIN;
+    g_set[STDIN_FILENO].events |= POLLIN;
     signals_cansyncterm();
     }
 return nready;
 }
 
-inline int client_POLLOUT(int nready, struct pollfd* set, struct TClient* client, char* recvbuff)
+int client_POLLOUT(int nready, struct pollfd* set, struct TClient* client, char* recvbuff)
 {
 set->revents ^= POLLOUT;
 --nready;
@@ -226,7 +243,7 @@ else
     client->m_remain = 0;
     set->events &= ~POLLOUT;
     --g_clients.m_blocked;
-    if ( g_set[1].fd == -1 ) //stdin closed
+    if ( g_set[STDIN_FILENO].fd == -1 ) //stdin closed
         {
         client_tdisconnect( client );
         }
@@ -234,7 +251,7 @@ else
 return nready;
 }
 
-inline int client_POLLIN(int nready, struct pollfd* set, struct TClient* client, char* recvbuff)
+int client_POLLIN(int nready, struct pollfd* set, struct TClient* client, char* recvbuff)
 {
 set->revents ^= POLLIN;
 --nready;
@@ -244,7 +261,7 @@ if ( p_iomode == IOMODE_NULL || p_outmode == IOMODE_NULL )
     ssize_t truncsize = recv( client->m_sock, recvbuff, p_recvbuff, MSG_TRUNC );
     if ( truncsize == -1 )
         {
-        error_recv();
+        error_recv( errno );
         client_disconnect( client );
         return nready;
         }
@@ -277,14 +294,14 @@ if ( writesize == -1 )
 ssize_t truncsize = recv( client->m_sock, recvbuff, writesize, MSG_TRUNC );
 if ( truncsize == -1 )
     {
-    error_recv();
+    error_recv( errno );
     client_disconnect( client );
     return nready;
     }
 assert( truncsize == writesize ); //WTF?
 if ( writesize < recvsize )
     {
-    g_set[0].events |= POLLOUT;
+    g_set[STDOUT_FILENO].events |= POLLOUT;
     int clientindex = 0;
     set = g_set + (2 + g_servers.m_count);
     while ( nready > 0 && clientindex < g_clients.m_count )
@@ -302,7 +319,7 @@ if ( writesize < recvsize )
 return nready;
 }
 
-inline void client_sendall(char* buff, const size_t buffsize)
+void client_sendall(char* buff, const size_t buffsize)
 {
 int clientindex = 0;
 int setindex = client2set( 0 );
@@ -332,10 +349,6 @@ while (clientindex < g_clients.m_count)
         client->m_remain = buffsize - sendsize;
         set->events |= POLLOUT;
         }
-    else if ( g_set[1].fd == -1 ) //stdin closed
-        {
-        client_tdisconnect( client );
-        }
     ++clientindex;
     ++setindex;
     }
@@ -362,6 +375,10 @@ client_del( client );
 
 void client_tdisconnect(struct TClient* client)
 {
+if ( 0 < client->m_remain )
+    {
+    return;
+    }
 if ( p_wait.tv_usec == -1 )
     {
     return;
@@ -372,5 +389,22 @@ if ( timer_iszero( &p_wait ) )
     return;
     }
 timer_init( client );
+}
+
+void client_disconnectall()
+{
+int index = 0;
+while ( index < g_clients.m_count )
+    {
+    struct TClient* client = g_clients.m_client + index;
+    if ( client->m_timer.tv_sec != 0 || client->m_timer.tv_usec != 0 )
+        {
+        ++index;
+        }
+    else
+        {
+        client_tdisconnect( client );
+        }
+    }
 }
 

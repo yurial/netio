@@ -7,10 +7,10 @@
 struct pollfd* g_set;
 int g_setcount;
 
-inline void set_add(int pos, int fd, int events)
+void set_add(int pos, int fd, int events)
 {
 int newsetcount = g_setcount + 1;
-struct pollfd* newset = malloc( sizeof(struct pollfd) * newsetcount );
+struct pollfd* newset = (struct pollfd*)malloc( sizeof(struct pollfd) * newsetcount );
 int index;
 for (index = 0; index < pos; ++index)
     {
@@ -29,10 +29,10 @@ g_set = newset;
 g_setcount = newsetcount;
 }
 
-inline void set_del(int pos)
+void set_del(int pos)
 {
 int newsetcount = g_setcount - 1;
-struct pollfd* newset = malloc( sizeof(struct pollfd) * newsetcount );
+struct pollfd* newset = (struct pollfd*)malloc( sizeof(struct pollfd) * newsetcount );
 int index;
 for (index = 0; index < pos; ++index)
     {
@@ -46,3 +46,4 @@ free( g_set );
 g_set = newset;
 g_setcount = newsetcount;
 }
+

@@ -8,7 +8,7 @@ void error_socket(int error)
     errno = error;
     perror( NULL );
 #else
-    char* msg = NULL;
+    const char* msg = NULL;
     #ifndef USEMINIMAL
     switch ( error )
         {
@@ -43,7 +43,7 @@ void error_malloc(int error)
     errno = error;
     perror( NULL );
 #else
-    char* msg = NULL;
+    const char* msg = NULL;
     #ifndef USEMINIMAL
     switch ( error )
         {
@@ -62,7 +62,7 @@ void error_bind(int error)
     errno = error;
     perror( NULL );
 #else
-    char* msg = NULL;
+    const char* msg = NULL;
     #ifndef USEMINIMAL
     switch ( error )
         {
@@ -117,7 +117,7 @@ void error_accept(int error)
     errno = error;
     perror( NULL );
 #else
-    char* msg = NULL;
+    const char* msg = NULL;
     #ifndef USEMINIMAL
     switch ( error )
         {
@@ -183,7 +183,7 @@ void error_listen(int error)
     errno = error;
     perror( NULL );
 #else
-    char* msg = NULL;
+    const char* msg = NULL;
     #ifndef USEMINIMAL
     switch ( error )
         {
@@ -211,7 +211,7 @@ void error_connect(int error)
     errno = error;
     perror( NULL );
 #else
-    char* msg = NULL;
+    const char* msg = NULL;
     #ifndef USEMINIMAL
     switch ( error )
         {
@@ -269,7 +269,7 @@ void error_dup2(int error)
     errno = error;
     perror( NULL );
 #else
-    char* msg = NULL;
+    const char* msg = NULL;
     #ifndef USEMINIMAL
     switch ( error )
         {
@@ -300,7 +300,7 @@ void error_close(int error)
     errno = error;
     perror( NULL );
 #else
-    char* msg = NULL;
+    const char* msg = NULL;
     #ifndef USEMINIMAL
     switch ( error )
         {
@@ -325,7 +325,7 @@ void error_read(int error)
     errno = error;
     perror( NULL );
 #else
-    char* msg = NULL;
+    const char* msg = NULL;
     #ifndef USEMINIMAL
     switch ( error )
         {
@@ -362,7 +362,7 @@ void error_write(int error)
     errno = error;
     perror( NULL );
 #else
-    char* msg = NULL;
+    const char* msg = NULL;
     #ifndef USEMINIMAL
     switch ( error )
         {
@@ -405,7 +405,7 @@ void error_recv(int error)
     errno = error;
     perror( NULL );
 #else
-    char* msg = NULL;
+    const char* msg = NULL;
     #ifndef USEMINIMAL
     switch ( error )
         {
@@ -448,7 +448,7 @@ void error_send(int error)
     errno = error;
     perror( NULL );
 #else
-    char* msg = NULL;
+    const char* msg = NULL;
     #ifndef USEMINIMAL
     switch ( error )
         {
@@ -512,7 +512,7 @@ void error_fork(int error)
     errno = error;
     perror( NULL );
 #else
-    char* msg = NULL;
+    const char* msg = NULL;
     #ifndef USEMINIMAL
     switch ( error )
         {
@@ -534,7 +534,7 @@ void error_exec(int error)
     errno = error;
     perror( NULL );
 #else
-char* msg = NULL;
+const char* msg = NULL;
 #ifndef USEMINIMAL
     switch ( error )
         {
@@ -603,7 +603,7 @@ void error_fsync(int error)
     errno = error;
     perror( NULL );
 #else
-char* msg = NULL;
+const char* msg = NULL;
 #ifndef USEMINIMAL
     switch ( error )
         {
@@ -628,7 +628,7 @@ void error_poll(int error)
     errno = error;
     perror( NULL );
 #else
-    char* msg = NULL;
+    const char* msg = NULL;
     #ifndef USEMINIMAL
     switch ( error )
         {
@@ -656,7 +656,7 @@ void error_pipe(int error)
     errno = error;
     perror( NULL );
 #else
-    char* msg = NULL;
+    const char* msg = NULL;
     #ifndef USEMINIMAL
     switch ( error )
         {
@@ -684,7 +684,7 @@ void error_fcntl(int error)
     errno = error;
     perror( NULL );
 #else
-    char* msg = NULL;
+    const char* msg = NULL;
     #ifndef USEMINIMAL
     switch ( error )
         {
@@ -728,7 +728,7 @@ void error_getitimer(int error)
     errno = error;
     perror( NULL );
 #else
-    char* msg = NULL;
+    const char* msg = NULL;
     #ifndef USEMINIMAL
     switch ( error )
         {
@@ -756,7 +756,7 @@ void error_(int error)
     errno = error;
     perror( NULL );
 #else
-    char* msg = NULL;
+    const char* msg = NULL;
     #ifndef USEMINIMAL
     switch ( error )
         {

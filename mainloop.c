@@ -4,10 +4,13 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#include "io.h"
 #include "set.h"
+#include "error.h"
 #include "servers.h"
 #include "clients.h"
 #include "mainloop.h"
+#include "signals.h"
 #include "params.h"
 
 #include <signal.h>

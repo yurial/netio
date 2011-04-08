@@ -3,6 +3,7 @@
 #include <sys/time.h>
 
 #include "params.h"
+#include "error.h"
 #include "timer.h"
 
 #include <stdio.h>
@@ -103,13 +104,13 @@ if ( timer_iszero( &curr_value.it_value ) )
     {
     timer_setzero( &curr_value.it_interval );
     curr_value.it_value = p_wait;
+    timer_setnegative( &client->m_timer );
     ret = setitimer( ITIMER_REAL, &curr_value, NULL );
     if ( -1 == ret )
         {
         error_setitimer( errno );
         exit( EXIT_FAILURE );
         }
-    timer_setnegative( &client->m_timer );
     return;
     }
 else if ( timer_iszero( &curr_value.it_interval ) )

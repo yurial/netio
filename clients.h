@@ -24,15 +24,18 @@ int             m_blocked;
 
 extern struct TClients g_clients;
 
+int client2set(int index);
+int clients_loop(char* recvbuff, int nready);
 void client_add(int socket);
 
-inline int client_POLLOUT(int nready, struct pollfd* set, struct TClient* client, char* recvbuff);
-inline int client_POLLIN (int nready, struct pollfd* set, struct TClient* client, char* recvbuff);
+int client_POLLOUT(int nready, struct pollfd* set, struct TClient* client, char* recvbuff);
+int client_POLLIN (int nready, struct pollfd* set, struct TClient* client, char* recvbuff);
 
 void client_sendall(char* buff, const size_t buffsize);
 
 void client_disconnect(struct TClient* client);
 void client_tdisconnect(struct TClient* client);
+void client_disconnectall();
 
 #endif
 

@@ -1,11 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
+#include <unistd.h>
 #include <sys/socket.h>
 #include <sys/wait.h>
 
 #include "signals.h"
 #include "clients.h"
+#include "debug.h"
 #include "timer.h"
 
 #include "set.h"

@@ -9,7 +9,6 @@
 #include "params.h"
 #include "mkserver.h"
 #include "net.h"
-#include "cp.h"
 
 int mkserver(char* target, int* pproto)
 {

@@ -4,10 +4,9 @@
 #include <getopt.h>
 #include <assert.h>
 #include <signal.h>
-#include "signal.h"
+#include "signals.h"
 #include "params.h"
 #include "help.h"
-#include "cp.h"
 #include "collision.h"
 
 char**          p_targetv      = NULL;
@@ -15,8 +14,8 @@ int             p_targetc      = 0;
 
 int             p_server       = 0;
 int             p_once         = 0;
-int             p_connqueue    = 1;
-char*           p_cmd          = "/bin/sh";
+int             p_connqueue    = 128;
+const char*     p_cmd          = "/bin/sh";
 char*           p_incmd        = NULL;
 enum iomode     p_inmode       = IOMODE_NONE;
 char*           p_outcmd       = NULL;
@@ -33,7 +32,7 @@ const static char options[] = "hvVl1q:c:i:o:w:s:b:";
 const static struct option long_options[] = {
         { "io",        1, 0,  0  },
         { "rb",        1, 0,  0  },
-        { "sb",        1, 0,  0  },
+        { "wb",        1, 0,  0  },
         { "sync",      1, 0,  0  },
         { "help",      0, 0, 'h' },
         { "version",   0, 0, 'v' },
@@ -89,7 +88,7 @@ while( 1 )
             {
             if ( option_index == 0 )
                 {
-                p_iocmd = cp( getcmd( optarg, &p_iomode ) );
+                p_iocmd = strdup( getcmd( optarg, &p_iomode ) );
                 }
             else if ( option_index == 1 )
                 {
@@ -149,17 +148,17 @@ while( 1 )
             break;
         case 'c':
             {
-            p_cmd = cp( optarg );
+            p_cmd = strdup( optarg );
             }
             break;
         case 'i':
             {
-            p_incmd = cp( getcmd( optarg, &p_inmode ) );
+            p_incmd = strdup( getcmd( optarg, &p_inmode ) );
             }
             break;
         case 'o':
             {
-            p_outcmd = cp( getcmd( optarg, &p_outmode ) );
+            p_outcmd = strdup( getcmd( optarg, &p_outmode ) );
             }
             break;
         case 'w':
@@ -198,11 +197,11 @@ while( 1 )
 if ( optind < argc )
     {
     p_targetc = argc - optind;
-    p_targetv = malloc( sizeof(char*) * p_targetc );
+    p_targetv = (char**)malloc( sizeof(char*) * p_targetc );
     int ind;
     int argind;
     for (ind = 0, argind = optind; argind < argc; ++ind, ++argind)
-        p_targetv[ind] = cp( argv[argind] );
+        p_targetv[ind] = strdup( argv[argind] );
     }
 else
     {

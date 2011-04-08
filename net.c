@@ -3,7 +3,6 @@
 #include <string.h>
 #include "error.h"
 #include "net.h"
-#include "cp.h"
 
 const struct net_param net_params[] = {
 #ifdef USEUNIXSOCK
@@ -60,10 +59,11 @@ for (hostend = target; *hostend && *hostend != endchar; ++hostend)
 
 
 if ( !*hostend )
+    {
 #ifdef USEUNIXSOCK
-        if ( net_params[index].m_str == STR_UNIX )
+    if ( net_params[index].m_str == STR_UNIX )
         {
-        *host = malloc( sizeof(struct hostent) );
+        *host = (struct hostent*)malloc( sizeof(struct hostent) );
         if ( *host == NULL )
             {
             error_malloc( errno );
@@ -72,14 +72,14 @@ if ( !*hostend )
 
         memset( *host, 0, sizeof(struct hostent) );
         (*host)->h_length = strlen( target );
-        (*host)->h_addr_list = malloc( sizeof(char*) );
+        (*host)->h_addr_list = (char**)malloc( sizeof(char*) );
         if ( (*host)->h_addr_list == NULL )
             {
             error_malloc( errno );
             exit( EXIT_FAILURE );
             }
 
-        *((*host)->h_addr_list) = cp( target );
+        *((*host)->h_addr_list) = strdup( target );
         return proto;
         }
     else
@@ -88,9 +88,9 @@ if ( !*hostend )
         fprintf( stderr, "port not specified\n" );
         exit( EXIT_FAILURE );
         }
-
+    }
 int lenght = hostend - target;
-char* hostname= malloc( lenght + 1 );
+char* hostname = (char*)malloc( lenght + 1 );
 if ( hostname == NULL )
     {
     error_malloc( errno );

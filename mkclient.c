@@ -9,7 +9,6 @@
 #include "params.h"
 #include "mkclient.h"
 #include "net.h"
-#include "cp.h"
 
 int mkclient(char* target, int* pproto)
 {

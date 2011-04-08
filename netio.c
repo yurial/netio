@@ -11,6 +11,10 @@
 #include "io.h"
 #include "mainloop.h"
 #include "signals.h"
+#include "mkserver.h"
+#include "servers.h"
+#include "mkclient.h"
+#include "clients.h"
 
 int main(int argc, char* argv[])
 {

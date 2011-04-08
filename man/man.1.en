@@ -12,7 +12,7 @@ netio \- bind stdin & stdout to socket
 .RB [ \-c
 .IR cmd ]
 .RB [ \-w
-.IR msec\fR[s|m|h]]
+.IR num\fR[h|m|s]]
 .RB [ \-s ]
 .RB [ \-n ]
 .RB [ \-b
@@ -24,6 +24,8 @@ netio \- bind stdin & stdout to socket
 .IR action ]
 .RB [ \-o
 .IR action ])]
+.RB [ \-s
+.IR signal ]
 .IB target1
 .I "target2 ..."
 
@@ -32,7 +34,7 @@ netio \- bind stdin & stdout to socket
 .br
 <target>:       <local>|<net>
 .br
-<net>:          [<proto>://]<host>:<port>
+<net>:          <proto>://<host>:<port>
 .br
 <proto>:        tcp|udp|sctp|tcp6|udp6|sctp6
 .br
@@ -54,10 +56,10 @@ show small help and exit
 wait for incoming connection
 .TP
 .B \-1 \-\-once
-exit program on disconnect (can be used only with -l)
+close servers sockets after client connected
 .TP
 .B \-q \-\-connqueue
-maximum queue length of pending connections, default 1
+maximum queue length of pending connections, default 128
 .TP
 \fB\-c \-\-cmd\fR \fIcommand\fR
 use \fIcommand\fR line instead of '/bin/sh \-c' for redirection
@@ -77,28 +79,34 @@ once: execute command once and use its IO descriptor for every connection
 .br
 every: execute command for every new connection and use its IO descriptor
 .TP
-\fB\-w \-\-wait\fR \fImsec\fR[s|m|h]
-wait <msec> milli seconds after EOF before closing a socket
+\fB\-w \-\-wait\fR \fInum\fR[h|m|s]
+wait <num>[h|m|s] hours, minets, seconds or milli seconds after EOF before closing a socket
 .br
-s \- for seconds
-.br
-m \- for minutes
-.br
-h \- for hours
 .TP
-.B \-s \-\-sync
-use sync() after write to stdout
+.B \-\-sync
+use O_SYNC instead O_NONBLOCK for output descriptor
 .TP
-\fB\-b \-\-buff\fR \fIsize\fR[K|M|G]
-buffer for stdin (in bytes), default 1K
+\fB\-\-rb \fR \fIsize\fR[K|M|G]
+receive buffer, default 4K
 .br
 K \- Kilobytes
 .br
 M \- Megabytes
 .br
 G \- Gigabytes
+.TP
+\fB\-\-sb \fR \fIsize\fR[K|M|G]
+send buffer, default 4K
+.br
+K \- Kilobytes
+.br
+M \- Megabytes
+.br
+G \- Gigabytes
+.TP
+.B \-s \-\-signal \fIsignal\fR
+signal number or SIGHUP, SIGINT, SIGQUIT, SIGILL, SIGABRT, SIGFPE, SIGKILL, SIGSEGV, SIGPIPE, SIGALRM, SIGTERM, SIGUSR1, SIGUSR2, SIGCHLD, SIGCONT, SIGSTOP, SIGTSTP, SIGTTIN, SIGTTOU sended to child process when socket closed
 .SH EXAMPLE
-TODO: fix all examples
 
 $ netio tcp://microsoft.com:23
 
@@ -110,15 +118,15 @@ $ netio unix:../mysocket
 
 $ echo "MBX7Z86PRQYUHH13NKMTNQJGZY6ECTE=" |netio \-w 3s tcp://10.40.100.10:31337 >>answer
 
-$ netio \-sl --io 'every:netio \-s unix:/var/run/mysqld/mysqld.sock' tcp://0.0.0.0:3306
+$ netio \-l --io 'every:netio \-\-sync unix:/var/run/mysqld/mysqld.sock' tcp://0.0.0.0:3306
 
-\fBhost1\fR $ netio \-l1 \-o dump.raw tcp://0.0.0.0:1010
+\fBhost1\fR $ netio \-l1 tcp://0.0.0.0:1010 >dump.raw
 .br
-\fBhost2\fR # tcpdump \-i wlan0 \-w \- |netio tcp://host1:1010
+\fBhost2\fR # tcpdump \-i wlan0 |netio tcp://host1:1010
 
-\fBhost1\fR # netio \-sl \-c/bin/bash tcp://0.0.0.0:23
+\fBhost1\fR # netio \-l --io every:/bin/bash tcp://0.0.0.0:23
 .br
-\fBhost2\fR $ netio \-s tcp://host1:23
+\fBhost2\fR $ netio \-\-sync tcp://host1:23
 
 $ netio \-w 5s \-l tcp://127.0.0.1:2222 tcp://127.0.0.33333 \-i 'every:echo "qwe qwe"'
 
