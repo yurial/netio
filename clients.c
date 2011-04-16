@@ -397,13 +397,13 @@ int index = 0;
 while ( index < g_clients.m_count )
     {
     struct TClient* client = g_clients.m_client + index;
-    if ( client->m_timer.tv_sec != 0 || client->m_timer.tv_usec != 0 )
+    if ( (0 == client->m_timer.tv_sec) && (0 == client->m_timer.tv_usec) && (0 == client->m_remain) )
         {
-        ++index;
+        client_tdisconnect( client );
         }
     else
         {
-        client_tdisconnect( client );
+        ++index;
         }
     }
 }
