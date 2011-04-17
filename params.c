@@ -33,7 +33,7 @@ const static struct option long_options[] = {
         { "io",        1, 0,  0  },
         { "rb",        1, 0,  0  },
         { "wb",        1, 0,  0  },
-        { "sync",      1, 0,  0  },
+        { "sync",      0, 0,  0  },
         { "help",      0, 0, 'h' },
         { "version",   0, 0, 'v' },
         { "listen",    0, 0, 'l' },
