@@ -80,7 +80,7 @@ once: execute command once and use its IO descriptor for every connection
 every: execute command for every new connection and use its IO descriptor
 .TP
 \fB\-w \-\-wait\fR \fInum\fR[h|m|s]
-wait <num>[h|m|s] hours, minets, seconds or milli seconds after EOF before closing a socket
+wait <num>[h|m|s] hours, minutes, seconds or milli seconds after EOF before closing a socket
 .br
 .TP
 .B \-\-sync
